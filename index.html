@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -25,7 +25,7 @@
     <!-- Google Fonts & JSZip para empaquetado zip rápido -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2 family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         body {
@@ -60,16 +60,36 @@
                 </svg>
                 <span class="font-extrabold tracking-widest text-sm text-white uppercase">AE<span class="text-slate-400 font-light">DROP</span></span>
             </div>
-            <!-- Rol & Estado de Conexión en la Sala -->
-            <div id="role-badge" class="px-2.5 py-1 rounded-full text-[9px] font-bold tracking-wider uppercase bg-slate-900 border border-slate-800 text-slate-400 flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
-                <span>DESCONECTADO</span>
+            
+            <div class="flex items-center gap-2">
+                <!-- Rol & Estado de Conexión en la Sala -->
+                <div id="role-badge" class="px-2.5 py-1 rounded-full text-[9px] font-bold tracking-wider uppercase bg-slate-900 border border-slate-800 text-slate-400 flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+                    <span>DESCONECTADO</span>
+                </div>
+                
+                <!-- Botón de Configuración Nube -->
+                <button id="btn-open-settings" class="p-1.5 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors" title="Configurar base de datos en la nube">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.43l-1.003.828c-.293.241-.438.613-.43.992a7.723 7.723 0 010 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.43l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.991l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.645-.869l.214-1.28z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </button>
             </div>
         </div>
     </header>
 
     <!-- CONTENIDO PRINCIPAL -->
     <main class="flex-grow p-4 max-w-md mx-auto w-full flex flex-col justify-start gap-5">
+
+        <!-- AVISO DE CONFIGURACIÓN DE NUBE (Muestra si no está configurada la nube real) -->
+        <div id="cloud-setup-notice" class="bg-amber-500/10 border border-amber-500/20 p-3.5 rounded-2xl flex items-start gap-3 text-xs text-amber-400">
+            <span class="text-base">☁️</span>
+            <div class="space-y-1">
+                <p class="font-bold text-amber-300">Modo Local Limitado (Prueba)</p>
+                <p>Para compartir fotos de forma real entre dispositivos sin límite de espacio, haz clic en el engranaje superior ⚙️ y pega tu configuración de Firebase.</p>
+            </div>
+        </div>
 
         <!-- PANTALLA 1: INICIO (CREAR / UNIRSE / HISTORIAL) -->
         <div id="screen-auth" class="space-y-5 my-auto">
@@ -108,7 +128,6 @@
                 </div>
                 <!-- Contenedor del listado -->
                 <div id="history-list" class="space-y-2 max-h-[220px] overflow-y-auto pr-1">
-                    <!-- Dinámico -->
                     <p class="text-[10px] text-slate-600 text-center py-2">No tienes entregas recientes registradas.</p>
                 </div>
             </div>
@@ -207,6 +226,43 @@
 
     </main>
 
+    <!-- MODAL DE CONFIGURACIÓN DE FIREBASE (CONEXIÓN NUBE REAL) -->
+    <div id="modal-settings" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-sm p-6 space-y-4 relative">
+            <button id="btn-close-settings" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            
+            <div class="space-y-1">
+                <span class="text-[9px] uppercase tracking-widest text-slate-400 font-extrabold">Configuración Avanzada</span>
+                <h3 class="text-base font-bold text-white">Conectar Nube de Firebase</h3>
+                <p class="text-[11px] text-slate-400">Pega la configuración SDK de tu proyecto Firebase (Gratuito) para habilitar subidas reales ilimitadas de 10MB+ y compartir en vivo con clientes.</p>
+            </div>
+
+            <div class="space-y-3">
+                <textarea id="textarea-firebase-config" placeholder='{\n  "apiKey": "AIzaSy...",\n  "authDomain": "...",\n  "projectId": "...",\n  "storageBucket": "...",\n  "messagingSenderId": "...",\n  "appId": "..."\n}' class="w-full h-40 bg-slate-950 border border-slate-850 rounded-xl p-3 text-[10px] text-slate-300 placeholder-slate-700 focus:outline-none focus:border-slate-500 font-mono"></textarea>
+                
+                <div class="flex gap-2">
+                    <button id="btn-save-settings" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-950 font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider transition-colors">
+                        Guardar Nube
+                    </button>
+                    <button id="btn-reset-settings" class="bg-slate-800 hover:bg-red-950 hover:text-red-400 text-slate-400 font-bold py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider border border-slate-750 hover:border-red-900 transition-all">
+                        Restablecer
+                    </button>
+                </div>
+            </div>
+            
+            <div class="border-t border-slate-850 pt-3 text-[10px] text-slate-500 space-y-1">
+                <p class="font-semibold text-slate-400">¿Cómo conseguir este código?</p>
+                <ol class="list-decimal pl-4 space-y-0.5">
+                    <li>Entra a la consola de Firebase.</li>
+                    <li>Crea un proyecto y añade una App Web.</li>
+                    <li>Copia el objeto `firebaseConfig` y pégalo aquí.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
     <!-- FOOTER -->
     <footer class="border-t border-slate-900 bg-slate-950 px-4 py-4 mt-8">
         <div class="max-w-md mx-auto text-center flex items-center justify-between">
@@ -252,32 +308,32 @@
         import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getStorage, ref, uploadString, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
-        // Variables Globales provistas por el Entorno / Fallbacks
+        // Variables Globales del Entorno / Configuración Guardada en LocalStorage por el usuario
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'aedrop-premium-v1';
-        const rawFirebaseConfig = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
+        
+        let savedCustomConfig = null;
+        try {
+            savedCustomConfig = localStorage.getItem('aedrop_custom_firebase_config');
+        } catch(e) {}
 
-        const firebaseConfig = rawFirebaseConfig ? JSON.parse(rawFirebaseConfig) : {
-            apiKey: "", 
-            authDomain: "aedrop-dummy.firebaseapp.com",
-            projectId: "aedrop-dummy",
-            storageBucket: "aedrop-dummy.appspot.com",
-            messagingSenderId: "123456",
-            appId: "1:123456:web:123"
-        };
+        const rawFirebaseConfig = savedCustomConfig ? savedCustomConfig : (typeof __firebase_config !== 'undefined' ? __firebase_config : null);
 
         let app, auth, db, storage;
         let isFirebaseActive = false;
 
-        try {
-            if (rawFirebaseConfig) {
-                app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-                storage = getStorage(app);
-                isFirebaseActive = true;
+        if (rawFirebaseConfig) {
+            try {
+                const firebaseConfig = JSON.parse(rawFirebaseConfig);
+                if (firebaseConfig && firebaseConfig.apiKey) {
+                    app = initializeApp(firebaseConfig);
+                    auth = getAuth(app);
+                    db = getFirestore(app);
+                    storage = getStorage(app);
+                    isFirebaseActive = true;
+                }
+            } catch (err) {
+                console.error("Firebase no pudo cargarse con la configuración provista:", err);
             }
-        } catch (err) {
-            console.error("Firebase no activo:", err);
         }
 
         // --- MODELO ---
@@ -312,7 +368,7 @@
         const toastMessage = document.getElementById('toast-message');
         const toastIcon = document.getElementById('toast-icon');
 
-        // Botones nuevos de visualización/historial
+        // Paneles y Botones
         const adminActions = document.getElementById('admin-actions');
         const adminUploadPanel = document.getElementById('admin-upload-panel');
         const btnDownloadAll = document.getElementById('btn-download-all');
@@ -320,6 +376,14 @@
         const historyList = document.getElementById('history-list');
         const btnClearHistory = document.getElementById('btn-clear-history');
         const btnBackHome = document.getElementById('btn-back-home');
+        const cloudSetupNotice = document.getElementById('cloud-setup-notice');
+
+        // Ajustar visualización del banner de aviso nube
+        if (isFirebaseActive) {
+            cloudSetupNotice.classList.add('hidden');
+        } else {
+            cloudSetupNotice.classList.remove('hidden');
+        }
 
         // --- SISTEMA DE TOAST ---
         function showToast(message, icon = "✨") {
@@ -333,6 +397,55 @@
             }, 2500);
         }
 
+        // --- MODAL DE CONFIGURACIÓN ---
+        const modalSettings = document.getElementById('modal-settings');
+        const btnOpenSettings = document.getElementById('btn-open-settings');
+        const btnCloseSettings = document.getElementById('btn-close-settings');
+        const textareaFirebaseConfig = document.getElementById('textarea-firebase-config');
+        const btnSaveSettings = document.getElementById('btn-save-settings');
+        const btnResetSettings = document.getElementById('btn-reset-settings');
+
+        btnOpenSettings.addEventListener('click', () => {
+            if (savedCustomConfig) {
+                textareaFirebaseConfig.value = savedCustomConfig;
+            } else {
+                textareaFirebaseConfig.value = '';
+            }
+            modalSettings.classList.remove('hidden');
+        });
+
+        btnCloseSettings.addEventListener('click', () => {
+            modalSettings.classList.add('hidden');
+        });
+
+        btnSaveSettings.addEventListener('click', () => {
+            const val = textareaFirebaseConfig.value.trim();
+            if (!val) {
+                showToast("Por favor ingresa un código válido", "⚠️");
+                return;
+            }
+            try {
+                const parsed = JSON.parse(val);
+                if (!parsed.apiKey || !parsed.projectId) {
+                    showToast("Faltan campos claves de Firebase", "❌");
+                    return;
+                }
+                localStorage.setItem('aedrop_custom_firebase_config', val);
+                showToast("Configuración guardada. Recargando...", "💾");
+                setTimeout(() => window.location.reload(), 1500);
+            } catch (err) {
+                showToast("El JSON es inválido o tiene errores", "❌");
+            }
+        });
+
+        btnResetSettings.addEventListener('click', () => {
+            if (confirm("¿Seguro de restablecer al modo local offline?")) {
+                localStorage.removeItem('aedrop_custom_firebase_config');
+                showToast("Restablecido. Recargando...", "🔄");
+                setTimeout(() => window.location.reload(), 1500);
+            }
+        });
+
         // --- SISTEMA DE HISTORIAL (LOCALSTORAGE) ---
         function getHistory() {
             try {
@@ -345,7 +458,6 @@
 
         function saveToHistory(roomId, expiresAt, role) {
             let history = getHistory();
-            // Evitar duplicados
             history = history.filter(item => item.id !== roomId);
             history.unshift({
                 id: roomId,
@@ -353,7 +465,6 @@
                 role: role,
                 timestamp: Date.now()
             });
-            // Mantener solo los últimos 15 registros
             if (history.length > 15) history.pop();
             localStorage.setItem('aedrop_history_v1', JSON.stringify(history));
             renderHistory();
@@ -411,7 +522,7 @@
                 let actionButton = '';
                 if (isExpired) {
                     if (isPilot) {
-                        actionButton = `<button class="btn-reactivate bg-brand-500 hover:bg-slate-500 text-white font-bold text-[9px] px-2.5 py-1.5 rounded-lg uppercase transition-all" data-id="${item.id}">Reactivar</button>`;
+                        actionButton = `<button class="btn-reactivate bg-slate-850 hover:bg-slate-700 text-slate-300 font-bold text-[9px] px-2.5 py-1.5 rounded-lg uppercase transition-all border border-slate-750" data-id="${item.id}">Reactivar</button>`;
                     } else {
                         actionButton = `<span class="text-[9px] text-red-500 font-semibold uppercase">Expirado</span>`;
                     }
@@ -468,14 +579,6 @@
             });
         }
 
-        btnClearHistory.addEventListener('click', () => {
-            if (confirm("¿Seguro que deseas limpiar tu historial reciente de salas?")) {
-                localStorage.removeItem('aedrop_history_v1');
-                renderHistory();
-                showToast("Historial borrado", "🗑️");
-            }
-        });
-
         // --- AUTENTICACIÓN ---
         let authUser = null;
         async function authenticate() {
@@ -527,16 +630,15 @@
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
                 reader.onload = function(event) {
-                    // Si se solicita calidad 100% y el archivo ya es JPEG/PNG, evitamos recomprimir en canvas si pesa menos de 10MB
-                    // Pero para optimizar la velocidad de red en carga, lo pasamos por canvas para limitar la escala a un plano de alta fidelidad.
                     const img = new Image();
                     img.src = event.target.result;
                     img.onload = function() {
                         const canvas = document.createElement('canvas');
                         
-                        // Máxima resolución ultra-nítida de renderizado (Adecuado para pantallas 4K)
-                        const MAX_WIDTH = 2560; 
-                        const MAX_HEIGHT = 2560;
+                        // Si estamos en modo de prueba local, reducimos el escalado para proteger el navegador del piloto contra cuelgues de localStorage
+                        const limitSize = isFirebaseActive ? 2560 : 1200;
+                        const MAX_WIDTH = limitSize; 
+                        const MAX_HEIGHT = limitSize;
                         let width = img.width;
                         let height = img.height;
 
@@ -574,7 +676,7 @@
         async function createRoom() {
             const rId = generateRoomID();
             const timestamp = Date.now();
-            const expirationTime = timestamp + (24 * 60 * 60 * 1000); // 24 Horas exactas
+            const expirationTime = timestamp + (24 * 60 * 60 * 1000); // 24 Horas
 
             const newRoomData = {
                 id: rId,
@@ -785,7 +887,7 @@
             }
         }
 
-        // --- SUBIDA DE IMÁGENES (UPGRADE: FIREBASE STORAGE) ---
+        // --- SUBIDA DE IMÁGENES (CONEXIÓN SEGURA FIREBASE STORAGE) ---
         inputFileSelector.addEventListener('change', async (e) => {
             const files = Array.from(e.target.files);
             if (!files.length) return;
@@ -834,7 +936,7 @@
             updatedImages.push({
                 name: photoObj.name,
                 url: finalUrl,
-                storagePath: storagePath, // Guardamos la ruta del archivo para poder borrarlo después
+                storagePath: storagePath, // Ruta del archivo para borrarlo después
                 timestamp: Date.now()
             });
 
@@ -843,17 +945,24 @@
                     const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoom.id);
                     await updateDoc(docRef, { images: updatedImages });
                 } catch (e) {
-                    showToast("Fallo al registrar foto en base de datos", "⚠️");
+                    showToast("Fallo al registrar foto en la base de datos", "⚠️");
                 }
             } else {
-                currentRoom.images = updatedImages;
-                localStorage.setItem(`aedrop_${currentRoom.id}`, JSON.stringify(currentRoom));
-                // Disparar evento de storage manualmente para actualizar la pestaña actual
-                window.dispatchEvent(new StorageEvent('storage', {
-                    key: `aedrop_${currentRoom.id}`,
-                    newValue: JSON.stringify(currentRoom)
-                }));
-                renderGallery(updatedImages);
+                // Si estamos en modo de prueba local, validamos el espacio de localStorage antes de guardar
+                try {
+                    currentRoom.images = updatedImages;
+                    localStorage.setItem(`aedrop_${currentRoom.id}`, JSON.stringify(currentRoom));
+                    
+                    window.dispatchEvent(new StorageEvent('storage', {
+                        key: `aedrop_${currentRoom.id}`,
+                        newValue: JSON.stringify(currentRoom)
+                    }));
+                    renderGallery(updatedImages);
+                } catch (storageError) {
+                    console.error("LocalStorage lleno:", storageError);
+                    alert("⚠️ Límite de Almacenamiento Local Alcanzado\n\nNo puedes subir más imágenes en el modo de prueba local porque el celular se quedó sin espacio. Conecta tu cuenta gratuita de Firebase desde el engranaje superior ⚙️ para tener almacenamiento en la nube real e ilimitado.");
+                    return;
+                }
             }
             showToast("Foto subida correctamente", "✅");
         }
@@ -963,13 +1072,12 @@
 
                 for (let i = 0; i < images.length; i++) {
                     const img = images[i];
-                    // Si es una URL externa (Storage), descargamos el blob
                     let blobData;
                     if (img.url.startsWith('data:')) {
                         const base64Data = img.url.split(',')[1];
                         zip.file(img.name || `foto_${i + 1}.jpg`, base64Data, { base64: true });
                     } else {
-                        // Descargar el archivo binario desde Firebase Storage
+                        // Descargar el archivo binario desde Firebase Storage de forma asíncrona
                         const response = await fetch(img.url);
                         blobData = await response.blob();
                         zip.file(img.name || `foto_${i + 1}.jpg`, blobData);
