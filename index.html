@@ -1,9 +1,9 @@
-
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aedrop // Share Drone Photos</title>
+    <title>Aedrop // Premium Live Share</title>
     <!-- Tailwind CSS para interfaz elegante -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -11,65 +11,85 @@
             theme: {
                 extend: {
                     colors: {
-                        brand: {
-                            50: '#f8fafc',
-                            500: '#64748b', // Gris Titanio
-                            600: '#475569',
-                            950: '#020617',
+                        studio: {
+                            50: '#f6f6f6',
+                            100: '#e7e7e8',
+                            200: '#cfcfd1',
+                            300: '#ababaf',
+                            400: '#7e7e84',
+                            500: '#605f65',
+                            600: '#4b4a4f',
+                            700: '#3c3b40',
+                            800: '#2c2b2f', // Gris mate premium
+                            900: '#1e1e21', // Fondo de tarjetas
+                            950: '#111113', // Fondo profundo
                         }
                     }
                 }
             }
         }
     </script>
-    <!-- Google Fonts & JSZip para empaquetado zip rápido -->
+    <!-- Google Fonts & JSZip para empaquetado rápido -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2 family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #0b0f17; /* Slate oscuro espacial */
+            /* Degradado radial que simula la luz de estudio fotográfico de la imagen image_189f95.png */
+            background: radial-gradient(circle at 50% 40%, #2f2e32 0%, #111113 100%);
+            background-attachment: fixed;
         }
         .mono-font {
             font-family: 'JetBrains Mono', monospace;
         }
+        /* Clase especial para imitar el logo de los drones LITO */
+        .lito-style {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800;
+            font-style: italic;
+            letter-spacing: 0.05em;
+        }
         /* Ocultar barra de scroll estética */
         ::-webkit-scrollbar {
-            width: 4px;
+            width: 5px;
         }
         ::-webkit-scrollbar-track {
-            background: #090d16;
+            background: #111113;
         }
         ::-webkit-scrollbar-thumb {
-            background: #1e293b;
-            border-radius: 2px;
+            background: #2c2b2f;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4b4a4f;
         }
     </style>
 </head>
-<body class="text-slate-100 min-h-screen flex flex-col justify-between selection:bg-slate-700 selection:text-white">
+<body class="text-neutral-200 min-h-screen flex flex-col justify-between selection:bg-neutral-700 selection:text-white">
 
     <!-- HEADER DE LA APP -->
-    <header class="border-b border-slate-900 bg-slate-950/90 backdrop-blur sticky top-0 z-50 px-4 py-3">
+    <header class="border-b border-neutral-900 bg-neutral-950/85 backdrop-blur sticky top-0 z-40 px-4 py-3.5">
         <div class="max-w-md mx-auto flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <!-- Logotipo de Dron Minimalista -->
-                <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <!-- Logotipo minimalista industrial -->
+                <svg class="w-5 h-5 text-neutral-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 009 11a13.917 13.917 0 00-3.44-9.571M2.002 16h2.527m14.943 0h2.528M3.003 12h2.527m12.943 0h2.528M4.003 8h2.527m12.943 0h2.528M12 3v3h3a9 9 0 010 18h-3" />
                 </svg>
-                <span class="font-extrabold tracking-widest text-sm text-white uppercase">AE<span class="text-slate-400 font-light">DROP</span></span>
+                <span class="lito-style text-base text-white tracking-widest uppercase">AE<span class="text-neutral-400 font-light not-italic">DROP</span></span>
             </div>
             
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2.5">
                 <!-- Rol & Estado de Conexión en la Sala -->
-                <div id="role-badge" class="px-2.5 py-1 rounded-full text-[9px] font-bold tracking-wider uppercase bg-slate-900 border border-slate-800 text-slate-400 flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
-                    <span>DESCONECTADO</span>
+                <div id="role-badge" class="px-2.5 py-1 rounded-full text-[9px] font-bold tracking-wider uppercase bg-neutral-900 border border-neutral-800 text-neutral-400 flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-neutral-500"></span>
+                    <span>MODO OFFLINE</span>
                 </div>
                 
                 <!-- Botón de Configuración Nube -->
-                <button id="btn-open-settings" class="p-1.5 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors" title="Configurar base de datos en la nube">
+                <button id="btn-open-settings" class="p-1.5 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 rounded-lg text-neutral-400 hover:text-white transition-all" title="Configurar servidor en la nube">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.43l-1.003.828c-.293.241-.438.613-.43.992a7.723 7.723 0 010 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.43l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.991l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.645-.869l.214-1.28z" />
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -82,53 +102,55 @@
     <!-- CONTENIDO PRINCIPAL -->
     <main class="flex-grow p-4 max-w-md mx-auto w-full flex flex-col justify-start gap-5">
 
-        <!-- AVISO DE CONFIGURACIÓN DE NUBE (Muestra si no está configurada la nube real) -->
-        <div id="cloud-setup-notice" class="bg-amber-500/10 border border-amber-500/20 p-3.5 rounded-2xl flex items-start gap-3 text-xs text-amber-400">
+        <!-- AVISO DE CONFIGURACIÓN DE NUBE -->
+        <div id="cloud-setup-notice" class="bg-neutral-800/40 border border-neutral-700/30 p-3.5 rounded-2xl flex items-start gap-3 text-xs text-neutral-400">
             <span class="text-base">☁️</span>
             <div class="space-y-1">
-                <p class="font-bold text-amber-300">Modo Local Limitado (Prueba)</p>
-                <p>Para compartir fotos de forma real entre dispositivos sin límite de espacio, haz clic en el engranaje superior ⚙️ y pega tu configuración de Firebase.</p>
+                <p class="font-bold text-neutral-200">Simulación Local (Demostración)</p>
+                <p>Para enviar archivos reales entre móviles y computadoras, haz clic en el engranaje ⚙️ y vincula tus credenciales gratuitas de Firebase.</p>
             </div>
         </div>
 
-        <!-- PANTALLA 1: INICIO (CREAR / UNIRSE / HISTORIAL) -->
+        <!-- PANTALLA 1: INICIO -->
         <div id="screen-auth" class="space-y-5 my-auto">
-            <!-- Tarjeta Principal de Control -->
-            <div class="bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-900 p-6 rounded-3xl text-center shadow-2xl space-y-5">
+            <!-- Tarjeta Principal de Control (Estudio Mate) -->
+            <div class="bg-neutral-900/60 border border-neutral-800/80 p-6 rounded-3xl text-center shadow-2xl space-y-5 backdrop-blur-md">
                 <div>
-                    <h1 class="text-xl font-bold tracking-tight text-white">Entrega de Tomas Aéreas</h1>
-                    <p class="text-xs text-slate-400 mt-1">Genera galerías en alta resolución para tus clientes con caducidad automática de 24 horas.</p>
+                    <!-- Detalle sutil de línea en el encabezado -->
+                    <div class="w-12 h-1 bg-neutral-700 mx-auto mb-4 rounded-full"></div>
+                    <h1 class="text-xl font-bold tracking-tight text-white uppercase italic">Sincronización de Tomas</h1>
+                    <p class="text-xs text-neutral-400 mt-1.5 leading-relaxed">Transfiere archivos de forma estrictamente unidireccional. Tú controlas lo que ven tus receptores en directo.</p>
                 </div>
                 
                 <!-- Acciones Principales -->
-                <button id="btn-create-room" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-950 font-bold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 text-xs uppercase tracking-wider transition-all shadow-md active:scale-[0.99]">
-                    Crear Nueva Sala
+                <button id="btn-create-room" class="w-full bg-white hover:bg-neutral-200 text-neutral-950 font-bold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 text-xs uppercase tracking-wider transition-all shadow-md active:scale-[0.99] border border-transparent">
+                    Crear Sala de Envío
                 </button>
                 
                 <div class="relative flex py-1 items-center">
-                    <div class="flex-grow border-t border-slate-850"></div>
-                    <span class="flex-shrink mx-3 text-[9px] uppercase tracking-widest text-slate-600 font-semibold">o ingresar código</span>
-                    <div class="flex-grow border-t border-slate-850"></div>
+                    <div class="flex-grow border-t border-neutral-800/60"></div>
+                    <span class="flex-shrink mx-3 text-[9px] uppercase tracking-widest text-neutral-500 font-bold">o conectar para recibir</span>
+                    <div class="flex-grow border-t border-neutral-800/60"></div>
                 </div>
 
-                <!-- Unirse mediante ID manual -->
+                <!-- Conexión mediante ID -->
                 <div class="flex gap-2">
-                    <input id="input-room-id" type="text" placeholder="CÓDIGO DE SALA" class="flex-grow bg-slate-950 border border-slate-850 rounded-xl px-4 py-3 text-center uppercase tracking-widest font-bold text-white placeholder-slate-700 focus:outline-none focus:border-slate-700 text-xs transition-colors">
-                    <button id="btn-join-room" class="bg-slate-850 hover:bg-slate-800 text-slate-300 font-semibold px-5 rounded-xl text-xs uppercase tracking-wider transition-all border border-slate-800 active:scale-[0.98]">
-                        Unirse
+                    <input id="input-room-id" type="text" placeholder="CÓDIGO DE SALA" class="flex-grow bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3.5 text-center uppercase tracking-widest font-bold text-white placeholder-neutral-700 focus:outline-none focus:border-neutral-600 text-xs transition-all">
+                    <button id="btn-join-room" class="bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold px-5 rounded-xl text-xs uppercase tracking-wider transition-all border border-neutral-700 active:scale-[0.98]">
+                        Recibir
                     </button>
                 </div>
             </div>
 
             <!-- HISTORIAL DE SALAS ACTIVAS -->
-            <div id="history-section" class="bg-slate-950/60 border border-slate-900 p-4 rounded-2xl space-y-3">
+            <div id="history-section" class="bg-neutral-950/40 border border-neutral-900/60 p-4 rounded-2xl space-y-3">
                 <div class="flex items-center justify-between">
-                    <h3 class="font-bold text-[10px] uppercase tracking-wider text-slate-500">Historial de salas</h3>
-                    <button id="btn-clear-history" class="text-[9px] text-red-400 hover:text-red-300 transition-colors uppercase font-semibold">Limpiar</button>
+                    <h3 class="font-bold text-[10px] uppercase tracking-wider text-neutral-400">Salas Recientes</h3>
+                    <button id="btn-clear-history" class="text-[9px] text-neutral-500 hover:text-red-400 transition-colors uppercase font-bold">Limpiar</button>
                 </div>
                 <!-- Contenedor del listado -->
                 <div id="history-list" class="space-y-2 max-h-[220px] overflow-y-auto pr-1">
-                    <p class="text-[10px] text-slate-600 text-center py-2">No tienes entregas recientes registradas.</p>
+                    <p class="text-[10px] text-neutral-600 text-center py-2">No tienes salas guardadas en el historial.</p>
                 </div>
             </div>
         </div>
@@ -137,69 +159,76 @@
         <div id="screen-room" class="hidden space-y-4">
             
             <!-- Info Cabecera de la Sala -->
-            <div class="bg-slate-900/40 border border-slate-850 p-4 rounded-2xl flex flex-col gap-3">
+            <div class="bg-neutral-900/30 border border-neutral-800/60 p-4 rounded-2xl flex flex-col gap-3">
                 <div class="flex items-center justify-between">
                     <div>
-                        <span class="text-[9px] uppercase tracking-widest text-slate-500 font-bold">Código de Entrega</span>
-                        <div class="flex items-center gap-1.5">
-                            <h2 id="display-room-id" class="text-base font-bold text-white mono-font">#DRN-XXXX</h2>
-                            <button id="btn-copy-link" class="text-slate-400 hover:text-white p-1 rounded transition-colors" title="Copiar enlace de cliente">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5A3.375 3.375 0 006.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0015 2.25h-1.5a2.251 2.251 0 00-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 00-9-9z" /></svg>
+                        <span class="text-[9px] uppercase tracking-widest text-neutral-500 font-bold">Código de Transmisión</span>
+                        <div class="flex items-center gap-2">
+                            <!-- Estilo de código similar a LITO de la imagen -->
+                            <h2 id="display-room-id" class="text-xl font-extrabold italic text-white lito-style">#DROP-XXXX</h2>
+                            <button id="btn-copy-link" class="text-neutral-400 hover:text-white p-1 rounded-lg hover:bg-neutral-850 transition-all" title="Copiar enlace directo">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5A3.375 3.375 0 006.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0015 2.25h-1.5a2.251 2.251 0 00-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 00-9-9z" />
+                                </svg>
                             </button>
                         </div>
                     </div>
                     <div class="text-right">
-                        <span id="label-countdown" class="text-[9px] uppercase tracking-widest text-slate-500 block font-bold">Tiempo Restante</span>
-                        <span id="room-countdown" class="text-xs text-slate-300 font-bold mono-font">23h 59m</span>
+                        <span class="text-[9px] uppercase tracking-widest text-neutral-500 block font-bold">Estado</span>
+                        <span class="text-xs text-neutral-300 font-bold tracking-wider flex items-center gap-1 justify-end">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span>ACTIVA</span>
+                        </span>
                     </div>
                 </div>
 
-                <!-- Botones de Control (Modo Piloto) -->
-                <div id="admin-actions" class="flex gap-2">
-                    <button id="btn-show-qr" class="flex-1 bg-slate-800 hover:bg-slate-750 text-xs py-2 px-3 rounded-xl font-semibold flex items-center justify-center gap-2 border border-slate-755 transition-colors">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5zM13.5 16.25a.75.75 0 01.75-.75h1.125a.75.75 0 01.75.75v1.125a.75.75 0 01-.75.75h-1.125a.75.75 0 01-.75-.75V16.25z" /></svg>
-                        Compartir QR
+                <!-- Botones de Control de la Sala -->
+                <div class="flex gap-2">
+                    <!-- Compartir QR -->
+                    <button id="btn-show-qr" class="flex-1 bg-neutral-800 hover:bg-neutral-700 text-xs py-2.5 px-3 rounded-xl font-semibold flex items-center justify-center gap-2 border border-neutral-700 transition-colors">
+                        <svg class="w-3.5 h-3.5 text-neutral-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5zM13.5 16.25a.75.75 0 01.75-.75h1.125a.75.75 0 01.75.75v1.125a.75.75 0 01-.75.75h-1.125a.75.75 0 01-.75-.75V16.25z" /></svg>
+                        Compartir Acceso
                     </button>
-                    <button id="btn-leave-room" class="bg-slate-800 hover:bg-red-950 hover:text-red-400 text-xs py-2 px-3 rounded-xl font-semibold border border-slate-755 hover:border-red-900 transition-all">
-                        Cerrar Sala
+                    <!-- Salir o destruir -->
+                    <button id="btn-leave-room" class="bg-neutral-800 hover:bg-red-950/80 hover:text-red-300 text-xs py-2.5 px-4 rounded-xl font-semibold border border-neutral-700 hover:border-red-900 transition-all">
+                        Salir de la Sala
                     </button>
                 </div>
             </div>
 
-            <!-- Panel de Carga de Fotos (SOLO VISIBLE PARA EL PILOTO) -->
-            <div id="admin-upload-panel" class="bg-slate-900 border border-slate-850 p-4 rounded-2xl space-y-4">
+            <!-- Panel de Carga de Fotos (SOLO VISIBLE PARA EL EMISOR) -->
+            <div id="admin-upload-panel" class="hidden bg-neutral-900/50 border border-neutral-800/80 p-4 rounded-2xl space-y-4">
                 <div class="flex items-center justify-between">
-                    <h3 class="font-bold text-[10px] uppercase tracking-wider text-slate-300">📤 Subir Capturas</h3>
+                    <h3 class="font-bold text-[10px] uppercase tracking-wider text-neutral-300">📤 Añadir Archivos (Emisor)</h3>
                     <!-- Selector de Calidad -->
                     <div class="flex items-center gap-2">
-                        <span class="text-[9px] text-slate-500 font-bold uppercase">Calidad:</span>
-                        <select id="select-quality" class="bg-slate-850 border border-slate-700 text-[10px] rounded px-1.5 py-0.5 text-slate-300 focus:outline-none">
-                            <option value="0.7">Optimizado (Para Datos)</option>
-                            <option value="1.0" selected>Calidad Original (100%)</option>
+                        <span class="text-[9px] text-neutral-500 font-bold uppercase">Calidad:</span>
+                        <select id="select-quality" class="bg-neutral-800 border border-neutral-700 text-[10px] rounded px-1.5 py-0.5 text-neutral-300 focus:outline-none">
+                            <option value="0.7">Optimizado</option>
+                            <option value="1.0" selected>Original (100%)</option>
                         </select>
                     </div>
                 </div>
 
                 <!-- Input Selector -->
-                <label for="input-file-selector" class="border border-dashed border-slate-700 hover:border-slate-500 bg-slate-950 hover:bg-slate-900/30 rounded-xl p-5 text-center cursor-pointer flex flex-col items-center justify-center gap-2 group transition-all">
+                <label for="input-file-selector" class="border border-dashed border-neutral-700 hover:border-neutral-500 bg-neutral-950 hover:bg-neutral-900/30 rounded-xl p-5 text-center cursor-pointer flex flex-col items-center justify-center gap-2 group transition-all">
                     <input type="file" id="input-file-selector" class="hidden" accept="image/*" multiple>
-                    <div class="p-2.5 bg-slate-900 rounded-full group-hover:scale-105 transition-transform border border-slate-800">
-                        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
+                    <div class="p-2.5 bg-neutral-900 rounded-full group-hover:scale-105 transition-transform border border-neutral-800">
+                        <svg class="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
                     </div>
-                    <span class="text-xs font-semibold text-slate-300">Seleccionar fotos de dron</span>
-                    <span class="text-[9px] text-slate-500 font-medium">Soporta imágenes pesadas de 10MB+</span>
+                    <span class="text-xs font-semibold text-neutral-300">Seleccionar imágenes para enviar</span>
                 </label>
             </div>
 
             <!-- Galería de la Sala -->
             <div class="space-y-3">
                 <div class="flex items-center justify-between">
-                    <h3 class="font-bold text-[10px] uppercase tracking-wider text-slate-400">🖼️ Galería Compartida</h3>
-                    <span id="gallery-count" class="text-xs text-slate-500 mono-font">0 fotos</span>
+                    <h3 class="font-bold text-[10px] uppercase tracking-wider text-neutral-400">🖼 Archivos de la Sala</h3>
+                    <span id="gallery-count" class="text-xs text-neutral-500 mono-font font-medium">0 archivos</span>
                 </div>
 
                 <!-- Botón de Descarga Masiva ZIP -->
-                <button id="btn-download-all" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-950 font-bold py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 hidden">
+                <button id="btn-download-all" class="w-full bg-neutral-200 hover:bg-neutral-100 text-neutral-950 font-bold py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 hidden shadow-md">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
                     Descargar todo (.ZIP)
                 </button>
@@ -207,99 +236,111 @@
                 <!-- Grid de Fotos -->
                 <div id="gallery-grid" class="grid grid-cols-2 gap-2">
                     <!-- Estado Vacío -->
-                    <div id="gallery-empty" class="col-span-2 bg-slate-900/20 border border-slate-850 rounded-2xl py-12 text-center text-slate-500">
-                        <p class="text-xs font-semibold">Esperando fotos...</p>
-                        <p class="text-[9px] mt-1 text-slate-600">Las fotos cargadas aparecerán aquí al instante.</p>
+                    <div id="gallery-empty" class="col-span-2 bg-neutral-900/10 border border-neutral-800/60 rounded-2xl py-12 text-center text-neutral-500">
+                        <p class="text-xs font-semibold">Esperando archivos...</p>
+                        <p class="text-[9px] mt-1 text-neutral-600">Aparecerán aquí instantáneamente en tiempo real cuando el Emisor los cargue.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Botón Grande de Compartir (Modo Piloto - Abajo) -->
-            <button id="btn-main-share" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-950 font-bold py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-slate-500/10">
+            <!-- Botón Grande de Compartir (Solo Emisor) -->
+            <button id="btn-main-share" class="hidden w-full bg-white hover:bg-neutral-200 text-neutral-950 font-bold py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186l5.311-2.656m-5.311 4.842l5.311 2.656m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
                 </svg>
-                Compartir con Cliente
+                Compartir Acceso Receptor
             </button>
 
         </div>
 
     </main>
 
-    <!-- MODAL DE CONFIGURACIÓN DE FIREBASE (CONEXIÓN NUBE REAL) -->
+    <!-- MODAL DE CONFIGURACIÓN DE FIREBASE -->
     <div id="modal-settings" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-sm p-6 space-y-4 relative">
-            <button id="btn-close-settings" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+        <div class="bg-neutral-900 border border-neutral-800 rounded-3xl w-full max-w-sm p-6 space-y-4 relative shadow-2xl">
+            <button id="btn-close-settings" class="absolute top-4 right-4 text-neutral-400 hover:text-white hover:bg-neutral-800 p-1 rounded-lg transition-all">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
             
             <div class="space-y-1">
-                <span class="text-[9px] uppercase tracking-widest text-slate-400 font-extrabold">Configuración Avanzada</span>
-                <h3 class="text-base font-bold text-white">Conectar Nube de Firebase</h3>
-                <p class="text-[11px] text-slate-400">Pega la configuración SDK de tu proyecto Firebase (Gratuito) para habilitar subidas reales ilimitadas de 10MB+ y compartir en vivo con clientes.</p>
+                <span class="text-[9px] uppercase tracking-widest text-neutral-400 font-extrabold">Configuración del Servidor</span>
+                <h3 class="text-base font-bold text-white">Conectar Base de Datos</h3>
+                <p class="text-[11px] text-neutral-400 leading-relaxed">Pega el objeto JSON `firebaseConfig` de tu consola para habilitar transferencia real ilimitada entre distintos terminales.</p>
             </div>
 
             <div class="space-y-3">
-                <textarea id="textarea-firebase-config" placeholder='{\n  "apiKey": "AIzaSy...",\n  "authDomain": "...",\n  "projectId": "...",\n  "storageBucket": "...",\n  "messagingSenderId": "...",\n  "appId": "..."\n}' class="w-full h-40 bg-slate-950 border border-slate-850 rounded-xl p-3 text-[10px] text-slate-300 placeholder-slate-700 focus:outline-none focus:border-slate-500 font-mono"></textarea>
+                <textarea id="textarea-firebase-config" placeholder='{\n  "apiKey": "AIzaSy...",\n  "authDomain": "...",\n  "projectId": "...",\n  "storageBucket": "...",\n  "messagingSenderId": "...",\n  "appId": "..."\n}' class="w-full h-40 bg-neutral-950 border border-neutral-800/80 rounded-xl p-3 text-[10px] text-neutral-300 placeholder-neutral-700 focus:outline-none focus:border-neutral-600 font-mono"></textarea>
                 
                 <div class="flex gap-2">
-                    <button id="btn-save-settings" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-950 font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider transition-colors">
+                    <button id="btn-save-settings" class="flex-1 bg-white hover:bg-neutral-200 text-neutral-950 font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider transition-colors">
                         Guardar Nube
                     </button>
-                    <button id="btn-reset-settings" class="bg-slate-800 hover:bg-red-950 hover:text-red-400 text-slate-400 font-bold py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider border border-slate-750 hover:border-red-900 transition-all">
+                    <button id="btn-reset-settings" class="bg-neutral-850 hover:bg-red-950 hover:text-red-400 text-neutral-300 font-bold py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider border border-neutral-700 hover:border-red-900 transition-all">
                         Restablecer
                     </button>
                 </div>
             </div>
-            
-            <div class="border-t border-slate-850 pt-3 text-[10px] text-slate-500 space-y-1">
-                <p class="font-semibold text-slate-400">¿Cómo conseguir este código?</p>
-                <ol class="list-decimal pl-4 space-y-0.5">
-                    <li>Entra a la consola de Firebase.</li>
-                    <li>Crea un proyecto y añade una App Web.</li>
-                    <li>Copia el objeto `firebaseConfig` y pégalo aquí.</li>
-                </ol>
-            </div>
         </div>
     </div>
-
-    <!-- FOOTER -->
-    <footer class="border-t border-slate-900 bg-slate-950 px-4 py-4 mt-8">
-        <div class="max-w-md mx-auto text-center flex items-center justify-between">
-            <p class="text-[9px] text-slate-600 font-bold tracking-wider uppercase">Aedrop Enterprise</p>
-            <button id="btn-back-home" class="text-[9px] text-slate-400 hover:text-white transition-colors uppercase font-semibold hidden">Inicio</button>
-        </div>
-    </footer>
 
     <!-- MODAL DE QR (COMPARTIR) -->
     <div id="modal-qr" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-sm p-6 space-y-4 relative">
-            <button id="btn-close-qr" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+        <div class="bg-neutral-900 border border-neutral-800 rounded-3xl w-full max-w-sm p-6 space-y-4 relative shadow-2xl">
+            <button id="btn-close-qr" class="absolute top-4 right-4 text-neutral-400 hover:text-white hover:bg-neutral-800 p-1 rounded-lg transition-all">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
             <div class="text-center">
-                <span class="text-[9px] uppercase tracking-widest text-slate-400 font-extrabold">Escanear para acceder</span>
-                <h3 id="modal-room-id" class="text-base font-bold text-white mono-font mt-1">#DRN-XXXX</h3>
-                <p class="text-[10px] text-slate-400 mt-1">El cliente entrará directamente al visualizador y descargador masivo.</p>
+                <span class="text-[9px] uppercase tracking-widest text-neutral-400 font-extrabold">Escanear para Vincular</span>
+                <h3 id="modal-room-id" class="text-base font-bold text-white mono-font mt-1 lito-style">#DROP-XXXX</h3>
+                <p class="text-[10px] text-neutral-400 mt-1 leading-relaxed">Cualquier dispositivo que escanee entrará directamente como receptor en tiempo real.</p>
             </div>
             
-            <!-- Contenedor QR -->
-            <div class="bg-white p-3.5 rounded-2xl aspect-square flex items-center justify-center max-w-[200px] mx-auto shadow-xl">
+            <!-- Contenedor QR con borde metálico sutil -->
+            <div class="bg-white p-3.5 rounded-2xl aspect-square flex items-center justify-center max-w-[200px] mx-auto shadow-xl border border-neutral-700/10">
                 <img id="qr-image" src="" alt="Código QR de la sala" class="w-full h-full">
             </div>
 
-            <!-- Botones de Enlace -->
-            <button id="btn-share-clipboard" class="w-full bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs py-3 rounded-xl font-semibold border border-slate-700 transition-colors">
-                Copiar enlace de acceso directo
+            <!-- Botón para copiar enlace directo -->
+            <button id="btn-share-clipboard" class="w-full bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs py-3 rounded-xl font-semibold border border-neutral-700 transition-colors">
+                Copiar Enlace de Acceso
             </button>
         </div>
     </div>
 
-    <!-- NOTIFICACIÓN TIPO TOAST -->
-    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900 border border-slate-700 text-slate-100 px-4 py-2.5 rounded-xl shadow-2xl text-[11px] font-semibold flex items-center gap-2 transition-all duration-300 opacity-0 pointer-events-none transform translate-y-2">
+    <!-- MODAL DE CONFIRMACIÓN PERSONALIZADO -->
+    <div id="modal-confirm" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-neutral-900 border border-neutral-800 rounded-3xl w-full max-w-sm p-5 space-y-4 relative shadow-2xl text-center">
+            <div class="mx-auto w-12 h-12 bg-neutral-800 rounded-full flex items-center justify-center text-xl mb-2 text-white border border-neutral-700">
+                ⚡
+            </div>
+            <div class="space-y-1">
+                <h3 id="confirm-title" class="text-sm font-bold text-white uppercase tracking-wider">¿Estás seguro?</h3>
+                <p id="confirm-message" class="text-[11px] text-neutral-400 leading-relaxed px-2">Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="flex gap-2">
+                <button id="btn-confirm-yes" class="flex-1 bg-red-600 hover:bg-red-500 text-white font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider transition-colors">
+                    Confirmar
+                </button>
+                <button id="btn-confirm-no" class="flex-1 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider border border-neutral-700 transition-colors">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICACIÓN TOAST -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-neutral-900 border border-neutral-750 text-neutral-200 px-4 py-2.5 rounded-xl shadow-2xl text-[11px] font-semibold flex items-center gap-2 transition-all duration-300 opacity-0 pointer-events-none transform translate-y-2">
         <span id="toast-icon">✨</span>
         <span id="toast-message">Copiado con éxito</span>
     </div>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-neutral-900/60 bg-neutral-950/40 px-4 py-4 mt-8">
+        <div class="max-w-md mx-auto text-center flex items-center justify-between">
+            <p class="text-[9px] text-neutral-500 font-bold tracking-wider uppercase">Aedrop Realtime Drop</p>
+            <button id="btn-back-home" class="text-[9px] text-neutral-400 hover:text-white transition-colors uppercase font-bold hidden">Menú Inicio</button>
+        </div>
+    </footer>
 
     <!-- LÓGICA DE NEGOCIO Y SINCRONIZACIÓN -->
     <script type="module">
@@ -308,8 +349,7 @@
         import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getStorage, ref, uploadString, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
-        // Variables Globales del Entorno / Configuración Guardada en LocalStorage por el usuario
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'aedrop-premium-v1';
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'aedrop-live-v2';
         
         let savedCustomConfig = null;
         try {
@@ -332,16 +372,15 @@
                     isFirebaseActive = true;
                 }
             } catch (err) {
-                console.error("Firebase no pudo cargarse con la configuración provista:", err);
+                console.error("Firebase err:", err);
             }
         }
 
-        // --- MODELO ---
         let currentRoom = null;
         let activeRoomUnsubscribe = null;
-        let userRole = "client"; // 'admin' (Piloto) o 'client' (Visualización)
+        let userRole = "client"; // "admin" (Emisor/Creador) o "client" (Receptor)
 
-        // --- ELEMENTOS DOM ---
+        // Elementos DOM
         const roleBadge = document.getElementById('role-badge');
         const screenAuth = document.getElementById('screen-auth');
         const screenRoom = document.getElementById('screen-room');
@@ -349,8 +388,6 @@
         const btnJoinRoom = document.getElementById('btn-join-room');
         const inputRoomId = document.getElementById('input-room-id');
         const displayRoomId = document.getElementById('display-room-id');
-        const labelCountdown = document.getElementById('label-countdown');
-        const countdownDisplay = document.getElementById('room-countdown');
         const btnCopyLink = document.getElementById('btn-copy-link');
         const btnShowQr = document.getElementById('btn-show-qr');
         const btnLeaveRoom = document.getElementById('btn-leave-room');
@@ -368,8 +405,6 @@
         const toastMessage = document.getElementById('toast-message');
         const toastIcon = document.getElementById('toast-icon');
 
-        // Paneles y Botones
-        const adminActions = document.getElementById('admin-actions');
         const adminUploadPanel = document.getElementById('admin-upload-panel');
         const btnDownloadAll = document.getElementById('btn-download-all');
         const btnMainShare = document.getElementById('btn-main-share');
@@ -378,14 +413,42 @@
         const btnBackHome = document.getElementById('btn-back-home');
         const cloudSetupNotice = document.getElementById('cloud-setup-notice');
 
-        // Ajustar visualización del banner de aviso nube
-        if (isFirebaseActive) {
-            cloudSetupNotice.classList.add('hidden');
-        } else {
-            cloudSetupNotice.classList.remove('hidden');
+        // REEMPLAZO PREMIUM DE CONFIRM() NATIVO
+        function customConfirm(title, message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('modal-confirm');
+                const titleEl = document.getElementById('confirm-title');
+                const msgEl = document.getElementById('confirm-message');
+                const btnYes = document.getElementById('btn-confirm-yes');
+                const btnNo = document.getElementById('btn-confirm-no');
+
+                titleEl.textContent = title;
+                msgEl.textContent = message;
+                modal.classList.remove('hidden');
+
+                const handleChoice = (choice) => {
+                    modal.classList.add('hidden');
+                    // Remover los event listeners clonando los botones para evitar duplicidad posterior
+                    const newYes = btnYes.cloneNode(true);
+                    const newNo = btnNo.cloneNode(true);
+                    btnYes.replaceWith(newYes);
+                    btnNo.replaceWith(newNo);
+                    resolve(choice);
+                };
+
+                document.getElementById('btn-confirm-yes').addEventListener('click', () => handleChoice(true));
+                document.getElementById('btn-confirm-no').addEventListener('click', () => handleChoice(false));
+            });
         }
 
-        // --- SISTEMA DE TOAST ---
+        if (isFirebaseActive) {
+            cloudSetupNotice.classList.add('hidden');
+            roleBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-neutral-400"></span><span>CONEXIÓN NUBE</span>`;
+        } else {
+            cloudSetupNotice.classList.remove('hidden');
+            roleBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span><span>MODO LOCAL</span>`;
+        }
+
         function showToast(message, icon = "✨") {
             toastMessage.textContent = message;
             toastIcon.textContent = icon;
@@ -397,7 +460,6 @@
             }, 2500);
         }
 
-        // --- MODAL DE CONFIGURACIÓN ---
         const modalSettings = document.getElementById('modal-settings');
         const btnOpenSettings = document.getElementById('btn-open-settings');
         const btnCloseSettings = document.getElementById('btn-close-settings');
@@ -406,171 +468,97 @@
         const btnResetSettings = document.getElementById('btn-reset-settings');
 
         btnOpenSettings.addEventListener('click', () => {
-            if (savedCustomConfig) {
-                textareaFirebaseConfig.value = savedCustomConfig;
-            } else {
-                textareaFirebaseConfig.value = '';
-            }
+            textareaFirebaseConfig.value = savedCustomConfig ? savedCustomConfig : '';
             modalSettings.classList.remove('hidden');
         });
 
-        btnCloseSettings.addEventListener('click', () => {
-            modalSettings.classList.add('hidden');
-        });
+        btnCloseSettings.addEventListener('click', () => modalSettings.classList.add('hidden'));
 
         btnSaveSettings.addEventListener('click', () => {
             const val = textareaFirebaseConfig.value.trim();
-            if (!val) {
-                showToast("Por favor ingresa un código válido", "⚠️");
-                return;
-            }
+            if (!val) return;
             try {
                 const parsed = JSON.parse(val);
-                if (!parsed.apiKey || !parsed.projectId) {
-                    showToast("Faltan campos claves de Firebase", "❌");
-                    return;
-                }
                 localStorage.setItem('aedrop_custom_firebase_config', val);
-                showToast("Configuración guardada. Recargando...", "💾");
-                setTimeout(() => window.location.reload(), 1500);
+                showToast("Guardado. Configurando entorno...", "💾");
+                setTimeout(() => window.location.reload(), 1200);
             } catch (err) {
-                showToast("El JSON es inválido o tiene errores", "❌");
+                showToast("JSON inválido", "❌");
             }
         });
 
-        btnResetSettings.addEventListener('click', () => {
-            if (confirm("¿Seguro de restablecer al modo local offline?")) {
+        btnResetSettings.addEventListener('click', async () => {
+            const accept = await customConfirm("Restablecer", "¿Deseas volver al modo local y borrar la base de datos enlazada?");
+            if (accept) {
                 localStorage.removeItem('aedrop_custom_firebase_config');
-                showToast("Restablecido. Recargando...", "🔄");
-                setTimeout(() => window.location.reload(), 1500);
+                showToast("Restablecido modo offline", "🔄");
+                setTimeout(() => window.location.reload(), 1200);
             }
         });
 
-        // --- SISTEMA DE HISTORIAL (LOCALSTORAGE) ---
+        // --- HISTORIAL PERSISTENTE CON LÓGICA DE ROL ---
         function getHistory() {
             try {
-                const history = localStorage.getItem('aedrop_history_v1');
+                const history = localStorage.getItem('aedrop_history_live_v2');
                 return history ? JSON.parse(history) : [];
-            } catch (e) {
-                return [];
-            }
+            } catch (e) { return []; }
         }
 
-        function saveToHistory(roomId, expiresAt, role) {
+        function saveToHistory(roomId, role) {
             let history = getHistory();
             history = history.filter(item => item.id !== roomId);
-            history.unshift({
-                id: roomId,
-                expiresAt: expiresAt,
-                role: role,
-                timestamp: Date.now()
-            });
-            if (history.length > 15) history.pop();
-            localStorage.setItem('aedrop_history_v1', JSON.stringify(history));
+            history.unshift({ id: roomId, role: role, timestamp: Date.now() });
+            localStorage.setItem('aedrop_history_live_v2', JSON.stringify(history));
             renderHistory();
         }
 
         function removeFromHistory(roomId) {
             let history = getHistory();
             history = history.filter(item => item.id !== roomId);
-            localStorage.setItem('aedrop_history_v1', JSON.stringify(history));
+            localStorage.setItem('aedrop_history_live_v2', JSON.stringify(history));
             renderHistory();
-            showToast("Sala removida de tu historial", "🗑️");
-        }
-
-        async function reactivateRoom(roomId) {
-            const newExpires = Date.now() + (24 * 60 * 60 * 1000); // 24hs más
-            if (isFirebaseActive) {
-                try {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomId);
-                    await updateDoc(docRef, { expiresAt: newExpires });
-                    showToast("Sala reactivada por 24 horas", "🔄");
-                } catch (e) {
-                    showToast("Fallo al reactivar en red", "❌");
-                    return;
-                }
-            } else {
-                const stored = localStorage.getItem(`aedrop_${roomId}`);
-                if (stored) {
-                    const roomData = JSON.parse(stored);
-                    roomData.expiresAt = newExpires;
-                    localStorage.setItem(`aedrop_${roomId}`, JSON.stringify(roomData));
-                }
-                showToast("Sala Demo reactivada", "🔄");
-            }
-            saveToHistory(roomId, newExpires, 'admin');
-            userRole = "admin";
-            joinRoom(roomId);
         }
 
         function renderHistory() {
             const history = getHistory();
             historyList.innerHTML = '';
-
             if (history.length === 0) {
-                historyList.innerHTML = `<p class="text-[10px] text-slate-600 text-center py-2">No tienes entregas recientes registradas.</p>`;
+                historyList.innerHTML = `<p class="text-[10px] text-neutral-600 text-center py-4">No hay salas activas guardadas.</p>`;
                 return;
             }
-
             history.forEach(item => {
-                const isExpired = Date.now() > item.expiresAt;
-                const expiresDate = new Date(item.expiresAt);
-                const isPilot = item.role === 'admin';
+                const isEmisor = item.role === "admin";
                 const div = document.createElement('div');
-                div.className = "flex items-center justify-between p-2.5 bg-slate-900 border border-slate-850 rounded-xl gap-2";
-                
-                let actionButton = '';
-                if (isExpired) {
-                    if (isPilot) {
-                        actionButton = `<button class="btn-reactivate bg-slate-850 hover:bg-slate-700 text-slate-300 font-bold text-[9px] px-2.5 py-1.5 rounded-lg uppercase transition-all border border-slate-750" data-id="${item.id}">Reactivar</button>`;
-                    } else {
-                        actionButton = `<span class="text-[9px] text-red-500 font-semibold uppercase">Expirado</span>`;
-                    }
-                } else {
-                    actionButton = `<button class="btn-reconnect bg-slate-800 hover:bg-slate-750 text-slate-300 font-bold text-[9px] px-2.5 py-1.5 rounded-lg uppercase transition-all" data-id="${item.id}" data-role="${item.role}">Reconectar</button>`;
-                }
-
+                div.className = "flex items-center justify-between p-3 bg-neutral-900 border border-neutral-800 rounded-xl gap-2 shadow-inner";
                 div.innerHTML = `
                     <div class="flex-grow min-w-0">
                         <div class="flex items-center gap-1.5">
-                            <span class="mono-font text-xs font-bold text-white">${item.id}</span>
-                            <span class="text-[8px] px-1 rounded ${isPilot ? 'bg-slate-100 text-slate-950 font-bold' : 'bg-slate-850 text-slate-400'} uppercase">${isPilot ? 'Piloto' : 'Cliente'}</span>
+                            <span class="mono-font text-xs font-bold text-white block lito-style">${item.id}</span>
+                            <span class="text-[8px] px-1.5 py-0.5 rounded ${isEmisor ? 'bg-neutral-100 text-neutral-950 font-extrabold italic' : 'bg-neutral-800 text-neutral-400'} uppercase font-bold tracking-wider">
+                                ${isEmisor ? 'Emisor' : 'Receptor'}
+                            </span>
                         </div>
-                        <span class="text-[8px] text-slate-500 block mt-0.5 truncate">
-                            ${isExpired ? 'Expiró el' : 'Expira:'} ${expiresDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} del ${expiresDate.toLocaleDateString([], {day: 'numeric', month: 'short'})}
-                        </span>
+                        <span class="text-[8px] text-neutral-500 block mt-0.5">Registrada: ${new Date(item.timestamp).toLocaleDateString()}</span>
                     </div>
                     <div class="flex items-center gap-1.5 flex-shrink-0">
-                        ${actionButton}
-                        <button class="btn-delete-history text-slate-500 hover:text-red-400 p-1.5 transition-colors" data-id="${item.id}" title="Quitar del historial">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
+                        <button class="btn-reconnect bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-bold text-[9px] px-2.5 py-1.5 rounded-lg uppercase transition-all" data-id="${item.id}" data-role="${item.role || 'client'}">Conectar</button>
+                        <button class="btn-delete-history text-neutral-500 hover:text-red-400 p-1.5 transition-colors" data-id="${item.id}">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                         </button>
                     </div>
                 `;
                 historyList.appendChild(div);
             });
 
-            // Listeners de reconexión
             document.querySelectorAll('.btn-reconnect').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const id = e.target.getAttribute('data-id');
                     const role = e.target.getAttribute('data-role');
-                    userRole = role;
+                    userRole = role; 
                     joinRoom(id);
                 });
             });
 
-            // Listeners de reactivación
-            document.querySelectorAll('.btn-reactivate').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const id = e.target.getAttribute('data-id');
-                    reactivateRoom(id);
-                });
-            });
-
-            // Listeners de eliminación de historial
             document.querySelectorAll('.btn-delete-history').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const id = e.target.closest('.btn-delete-history').getAttribute('data-id');
@@ -579,15 +567,19 @@
             });
         }
 
+        btnClearHistory.addEventListener('click', async () => {
+            const accept = await customConfirm("Limpiar", "¿Deseas vaciar el historial de salas?");
+            if (accept) {
+                localStorage.removeItem('aedrop_history_live_v2');
+                renderHistory();
+            }
+        });
+
         // --- AUTENTICACIÓN ---
         let authUser = null;
         async function authenticate() {
             if (!isFirebaseActive) return;
-            try {
-                await signInAnonymously(auth);
-            } catch (err) {
-                console.error("Autenticación fallida:", err);
-            }
+            try { await signInAnonymously(auth); } catch (err) { console.error(err); }
         }
 
         if (isFirebaseActive) {
@@ -600,31 +592,24 @@
             checkURLParameters();
         }
 
-        // --- PROCESAMIENTO DE PARÁMETROS URL ---
         function checkURLParameters() {
             const params = new URLSearchParams(window.location.search);
             const rId = params.get('room');
-            const adminMode = params.get('role');
-
             if (rId) {
-                userRole = adminMode === 'pilot' ? 'admin' : 'client';
+                userRole = "client"; // Receptor directo al cargar enlace compartido
                 joinRoom(rId);
             } else {
                 renderHistory();
             }
         }
 
-        // Generador de ID Corto
         function generateRoomID() {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             let id = '';
-            for (let i = 4; i > 0; i--) {
-                id += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return `DRN-${id}`;
+            for (let i = 4; i > 0; i--) id += chars.charAt(Math.floor(Math.random() * chars.length));
+            return `DROP-${id}`;
         }
 
-        // Compresor de Imágenes en Tiempo Real
         function compressImage(file, quality) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -634,77 +619,43 @@
                     img.src = event.target.result;
                     img.onload = function() {
                         const canvas = document.createElement('canvas');
-                        
-                        // Si estamos en modo de prueba local, reducimos el escalado para proteger el navegador del piloto contra cuelgues de localStorage
                         const limitSize = isFirebaseActive ? 2560 : 1200;
-                        const MAX_WIDTH = limitSize; 
-                        const MAX_HEIGHT = limitSize;
                         let width = img.width;
                         let height = img.height;
-
                         if (width > height) {
-                            if (width > MAX_WIDTH) {
-                                height *= MAX_WIDTH / width;
-                                width = MAX_WIDTH;
-                            }
+                            if (width > limitSize) { height *= limitSize / width; width = limitSize; }
                         } else {
-                            if (height > MAX_HEIGHT) {
-                                width *= MAX_HEIGHT / height;
-                                height = MAX_HEIGHT;
-                            }
+                            if (height > limitSize) { width *= limitSize / height; height = limitSize; }
                         }
-
                         canvas.width = width;
                         canvas.height = height;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
-
-                        // Exportar
-                        const compressedBase64 = canvas.toDataURL('image/jpeg', parseFloat(quality));
-                        resolve({
-                            name: file.name,
-                            base64: compressedBase64
-                        });
+                        resolve({ name: file.name, base64: canvas.toDataURL('image/jpeg', parseFloat(quality)) });
                     };
                 };
             });
         }
 
-        // --- MANEJO DE SALAS ---
-
-        // Crear Sala (Piloto)
+        // --- MANEJO DE SALAS EN VIVO ---
         async function createRoom() {
             const rId = generateRoomID();
-            const timestamp = Date.now();
-            const expirationTime = timestamp + (24 * 60 * 60 * 1000); // 24 Horas
+            const newRoomData = { id: rId, createdAt: Date.now(), images: [] };
 
-            const newRoomData = {
-                id: rId,
-                createdAt: timestamp,
-                expiresAt: expirationTime,
-                images: []
-            };
-
-            userRole = "admin"; // Diseñado como Piloto principal
+            userRole = "admin"; // Emisor
 
             if (isFirebaseActive) {
                 if (!authUser) await authenticate();
                 try {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', rId);
-                    await setDoc(docRef, newRoomData);
-                } catch (e) {
-                    showToast("Fallo de conexión", "❌");
-                    return;
-                }
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', rId), newRoomData);
+                } catch (e) { return; }
             } else {
                 localStorage.setItem(`aedrop_${rId}`, JSON.stringify(newRoomData));
             }
-
-            saveToHistory(rId, expirationTime, userRole);
+            saveToHistory(rId, "admin");
             enterRoom(newRoomData);
         }
 
-        // Unirse a Sala
         async function joinRoom(rId) {
             rId = rId.trim().toUpperCase().replace('#', '');
             if (!rId) return;
@@ -714,109 +665,78 @@
                 try {
                     const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', rId);
                     const docSnap = await getDoc(docRef);
-
                     if (docSnap.exists()) {
-                        const roomData = docSnap.data();
-                        if (Date.now() > roomData.expiresAt) {
-                            showToast("Esta sala ha expirado", "⌛");
-                            return;
-                        }
-                        saveToHistory(rId, roomData.expiresAt, userRole);
-                        enterRoom(roomData);
-                    } else {
-                        showToast("La sala no existe", "🔎");
-                    }
-                } catch (e) {
-                    showToast("Error de conexión", "❌");
-                }
+                        saveToHistory(rId, userRole);
+                        enterRoom(docSnap.data());
+                    } else { showToast("La sala no existe", "🔎"); }
+                } catch (e) { showToast("Error de red", "❌"); }
             } else {
                 const stored = localStorage.getItem(`aedrop_${rId}`);
                 if (stored) {
-                    const roomData = JSON.parse(stored);
-                    saveToHistory(rId, roomData.expiresAt, userRole);
-                    enterRoom(roomData);
+                    saveToHistory(rId, userRole);
+                    enterRoom(JSON.parse(stored));
                 } else {
-                    // Modo de Simulación de Sala Local si no existe en la prueba rápida
-                    const timestamp = Date.now();
-                    const expirationTime = timestamp + (24 * 60 * 60 * 1000);
-                    const mockRoom = {
-                        id: rId,
-                        createdAt: timestamp,
-                        expiresAt: expirationTime,
-                        images: []
-                    };
+                    const mockRoom = { id: rId, createdAt: Date.now(), images: [] };
                     localStorage.setItem(`aedrop_${rId}`, JSON.stringify(mockRoom));
-                    saveToHistory(rId, expirationTime, userRole);
+                    saveToHistory(rId, userRole);
                     enterRoom(mockRoom);
                 }
             }
         }
 
-        // Entrar a la interfaz activa de la sala
         function enterRoom(roomData) {
             currentRoom = roomData;
             
-            const roleParam = userRole === 'admin' ? '&role=pilot' : '';
-            window.history.pushState({}, '', `?room=${roomData.id}${roleParam}`);
+            window.history.pushState({}, '', `?room=${roomData.id}`);
 
             displayRoomId.textContent = `#${roomData.id}`;
             modalRoomId.textContent = `#${roomData.id}`;
 
-            updateCountdown(roomData.expiresAt);
-
-            // Generador del enlace de cliente limpio (sin &role=pilot)
             const clientJoinUrl = `${window.location.origin}${window.location.pathname}?room=${roomData.id}`;
             qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(clientJoinUrl)}`;
 
-            // Control visual basado en el Rol (Piloto vs Cliente)
+            // Control visual basado en roles unidireccionales
             if (userRole === "admin") {
-                roleBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span><span>PILOTO · CONECTADO</span>`;
-                roleBadge.className = "px-2.5 py-1 rounded-full text-[9px] font-bold tracking-wider uppercase bg-green-500/10 text-green-400 border border-green-500/20 flex items-center gap-1.5";
-                adminActions.classList.remove('hidden');
+                roleBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-white animate-pulse"></span><span>EMISOR (TÚ)</span>`;
+                roleBadge.className = "px-2.5 py-1 rounded-full text-[9px] font-bold tracking-wider uppercase bg-white/10 text-white border border-white/20 flex items-center gap-1.5";
+                
                 adminUploadPanel.classList.remove('hidden');
                 btnMainShare.classList.remove('hidden');
-                labelCountdown.textContent = "Tiempo Restante";
+                btnLeaveRoom.textContent = "Eliminar Sala";
+                btnLeaveRoom.className = "bg-neutral-900 hover:bg-red-950 hover:text-red-300 text-xs py-2.5 px-4 rounded-xl font-bold border border-neutral-800 hover:border-red-900 transition-all";
             } else {
-                roleBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span><span>CLIENTE · CONECTADO</span>`;
-                roleBadge.className = "px-2.5 py-1 rounded-full text-[9px] font-bold tracking-wider uppercase bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center gap-1.5";
-                adminActions.classList.add('hidden');
+                roleBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-neutral-400 animate-pulse"></span><span>RECEPTOR</span>`;
+                roleBadge.className = "px-2.5 py-1 rounded-full text-[9px] font-bold tracking-wider uppercase bg-neutral-800 text-neutral-300 border border-neutral-700 flex items-center gap-1.5";
+                
                 adminUploadPanel.classList.add('hidden');
                 btnMainShare.classList.add('hidden');
-                labelCountdown.textContent = "Disponible para descargar por";
+                btnLeaveRoom.textContent = "Salir";
+                btnLeaveRoom.className = "bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs py-2.5 px-4 rounded-xl font-bold border border-neutral-700 transition-all";
             }
 
-            // Suscribirse a cambios en tiempo real
             subscribeToRoom(roomData.id);
 
             screenAuth.classList.add('hidden');
             screenRoom.classList.remove('hidden');
             btnBackHome.classList.remove('hidden');
-
-            showToast(`Sincronizado a sala #${roomData.id}`, "📡");
+            showToast(`Sincronizado #${roomData.id}`, "📡");
         }
 
-        // SUSCRIPCIÓN EN TIEMPO REAL (DUAL: FIREBASE O LOCALSTORAGE EN MULTI-VENTANA)
         function subscribeToRoom(rId) {
             if (activeRoomUnsubscribe) activeRoomUnsubscribe();
 
             if (isFirebaseActive) {
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', rId);
-                activeRoomUnsubscribe = onSnapshot(docRef, (docSnap) => {
+                activeRoomUnsubscribe = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', rId), (docSnap) => {
                     if (docSnap.exists()) {
                         currentRoom = docSnap.data();
                         renderGallery(currentRoom.images);
                     } else {
                         exitRoom();
-                        showToast("La sala de entrega se ha cerrado", "🚪");
+                        showToast("La sala ha sido cerrada por el Emisor", "🚪");
                     }
-                }, (error) => {
-                    console.error("Fallo de subscripción:", error);
                 });
             } else {
-                // Renderizado inicial
                 renderGallery(currentRoom.images || []);
-
-                // Sincronizador para pruebas multi-pestaña local sin Firebase
                 const localSyncHandler = (e) => {
                     if (e.key === `aedrop_${rId}`) {
                         const updatedData = JSON.parse(e.newValue);
@@ -825,7 +745,7 @@
                             renderGallery(currentRoom.images);
                         } else {
                             exitRoom();
-                            showToast("La sala de entrega se ha cerrado", "🚪");
+                            showToast("La sala ha sido cerrada por el Emisor", "🚪");
                         }
                     }
                 };
@@ -834,214 +754,164 @@
             }
         }
 
-        // Salir al menú principal
         function exitRoom() {
-            if (activeRoomUnsubscribe) {
-                activeRoomUnsubscribe();
-                activeRoomUnsubscribe = null;
-            }
-
+            if (activeRoomUnsubscribe) { activeRoomUnsubscribe(); activeRoomUnsubscribe = null; }
             window.history.pushState({}, '', window.location.pathname);
             currentRoom = null;
-            userRole = "client"; // Reset
+            userRole = "client"; 
             screenRoom.classList.add('hidden');
             screenAuth.classList.remove('hidden');
             inputRoomId.value = '';
             btnBackHome.classList.add('hidden');
-            roleBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span><span>DESCONECTADO</span>`;
-            roleBadge.className = "px-2.5 py-1 rounded-full text-[9px] font-bold tracking-wider uppercase bg-slate-900 border border-slate-800 text-slate-400 flex items-center gap-1.5";
+            roleBadge.innerHTML = isFirebaseActive ? 
+                `<span class="w-1.5 h-1.5 rounded-full bg-neutral-400"></span><span>CONEXIÓN NUBE</span>` : 
+                `<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span><span>MODO LOCAL</span>`;
+            roleBadge.className = "px-2.5 py-1 rounded-full text-[9px] font-bold tracking-wider uppercase bg-neutral-900 border border-neutral-800 text-neutral-400 flex items-center gap-1.5";
             renderHistory();
         }
 
-        // Cierre de sala definitivo por el piloto (limpia Storage e hilos Firestore)
-        async function destroyRoom() {
+        async function handleLeaveOrDestroy() {
             if (!currentRoom) return;
-            if (confirm("¿Seguro de que deseas cerrar esta sala? Se perderán todas las fotos asociadas de la nube.")) {
-                const rId = currentRoom.id;
-                
-                showToast("Borrando archivos...", "🗑️");
 
-                if (isFirebaseActive) {
-                    try {
-                        // 1. Borrar todas las imágenes alojadas en Storage asociadas a la sala
-                        if (currentRoom.images && currentRoom.images.length > 0) {
-                            for (const img of currentRoom.images) {
-                                if (img.storagePath) {
-                                    const fileRef = ref(storage, img.storagePath);
-                                    await deleteObject(fileRef).catch(e => console.warn("Error borrando de Storage:", e));
+            if (userRole === "admin") {
+                const accept = await customConfirm("Eliminar Sala", "¿Estás seguro de eliminar esta sala? Se borrarán permanentemente todos sus archivos para todos los conectados.");
+                if (accept) {
+                    const rId = currentRoom.id;
+                    if (isFirebaseActive) {
+                        try {
+                            if (currentRoom.images && currentRoom.images.length > 0) {
+                                for (const img of currentRoom.images) {
+                                    if (img.storagePath) await deleteObject(ref(storage, img.storagePath)).catch(e => console.warn(e));
                                 }
                             }
-                        }
-
-                        // 2. Borrar documento de la sala en Firestore
-                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', rId);
-                        await deleteDoc(docRef);
-                    } catch (e) {
-                        console.error(e);
+                            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', rId));
+                        } catch (e) { console.error(e); }
+                    } else {
+                        localStorage.removeItem(`aedrop_${rId}`);
+                        window.dispatchEvent(new StorageEvent('storage', { key: `aedrop_${rId}`, newValue: null }));
                     }
-                } else {
-                    localStorage.removeItem(`aedrop_${rId}`);
+                    removeFromHistory(rId);
+                    exitRoom();
+                    showToast("Sala destruida", "🗑");
                 }
+            } else {
                 exitRoom();
-                showToast("Sala borrada permanentemente", "🗑️");
+                showToast("Saliste de la sala", "🚪");
             }
         }
 
-        // --- SUBIDA DE IMÁGENES (CONEXIÓN SEGURA FIREBASE STORAGE) ---
+        // --- SUBIDAS EN TIEMPO REAL (Exclusivo Emisor) ---
         inputFileSelector.addEventListener('change', async (e) => {
+            if (userRole !== 'admin') return;
             const files = Array.from(e.target.files);
             if (!files.length) return;
-
-            showToast("Procesando fotos...", "⚙️");
-            const quality = selectQuality.value;
-
+            showToast("Procesando...", "⚙");
             for (const file of files) {
                 try {
-                    const compressed = await compressImage(file, quality);
+                    const compressed = await compressImage(file, selectQuality.value);
                     await uploadPhoto(compressed);
-                } catch (err) {
-                    console.error("Fallo de compresión:", err);
-                }
+                } catch (err) { console.error(err); }
             }
             inputFileSelector.value = '';
         });
 
         async function uploadPhoto(photoObj) {
-            if (!currentRoom) return;
-
-            showToast(`Subiendo ${photoObj.name}...`, "☁️");
+            if (!currentRoom || userRole !== 'admin') return;
+            showToast(`Enviando ${photoObj.name}...`, "☁");
 
             let finalUrl = photoObj.base64;
             let storagePath = null;
 
             if (isFirebaseActive) {
                 try {
-                    // Ruta estricta de guardado en Firebase Storage
                     storagePath = `artifacts/${appId}/public/data/rooms/${currentRoom.id}/${Date.now()}_${photoObj.name}`;
                     const storageRef = ref(storage, storagePath);
-                    
-                    // Subida en Base64 seguro (data_url)
                     await uploadString(storageRef, photoObj.base64, 'data_url');
-                    
-                    // Obtener URL de descarga pública
                     finalUrl = await getDownloadURL(storageRef);
                 } catch (e) {
-                    console.error("Error al subir a Firebase Storage:", e);
-                    showToast("Fallo de carga en Storage", "⚠️");
+                    showToast("Error de subida", "⚠️");
                     return;
                 }
             }
 
             const updatedImages = [...(currentRoom.images || [])];
-            updatedImages.push({
-                name: photoObj.name,
-                url: finalUrl,
-                storagePath: storagePath, // Ruta del archivo para borrarlo después
-                timestamp: Date.now()
-            });
+            updatedImages.push({ name: photoObj.name, url: finalUrl, storagePath: storagePath, timestamp: Date.now() });
 
             if (isFirebaseActive) {
                 try {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoom.id);
-                    await updateDoc(docRef, { images: updatedImages });
-                } catch (e) {
-                    showToast("Fallo al registrar foto en la base de datos", "⚠️");
-                }
+                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoom.id), { images: updatedImages });
+                } catch (e) { showToast("Error de registro", "⚠️"); }
             } else {
-                // Si estamos en modo de prueba local, validamos el espacio de localStorage antes de guardar
                 try {
                     currentRoom.images = updatedImages;
                     localStorage.setItem(`aedrop_${currentRoom.id}`, JSON.stringify(currentRoom));
-                    
-                    window.dispatchEvent(new StorageEvent('storage', {
-                        key: `aedrop_${currentRoom.id}`,
-                        newValue: JSON.stringify(currentRoom)
-                    }));
+                    window.dispatchEvent(new StorageEvent('storage', { key: `aedrop_${currentRoom.id}`, newValue: JSON.stringify(currentRoom) }));
                     renderGallery(updatedImages);
-                } catch (storageError) {
-                    console.error("LocalStorage lleno:", storageError);
-                    alert("⚠️ Límite de Almacenamiento Local Alcanzado\n\nNo puedes subir más imágenes en el modo de prueba local porque el celular se quedó sin espacio. Conecta tu cuenta gratuita de Firebase desde el engranaje superior ⚙️ para tener almacenamiento en la nube real e ilimitado.");
-                    return;
+                } catch (err) {
+                    alert("Almacenamiento local de prueba agotado. Vincula Firebase desde el panel de configuración ⚙ para almacenamiento ilimitado.");
                 }
             }
-            showToast("Foto subida correctamente", "✅");
+            showToast("Enviado con éxito", "✅");
         }
 
-        // --- ELIMINAR FOTOS INDIVIDUALES (PILOTO) ---
+        // --- BORRADO CONTROLADO (Exclusivo Emisor) ---
         async function deletePhoto(index) {
-            if (userRole !== 'admin' || !currentRoom) return;
+            if (!currentRoom || userRole !== 'admin') return;
             
-            showToast("Eliminando foto...", "🗑️");
+            const accept = await customConfirm("Eliminar Imagen", "¿Estás seguro de que deseas borrar este archivo?");
+            if (!accept) return;
+
+            showToast("Borrando archivo...", "🗑");
             const updatedImages = [...(currentRoom.images || [])];
             const imgToDelete = updatedImages[index];
 
-            // 1. Borrar de Storage si aplica
             if (isFirebaseActive && imgToDelete.storagePath) {
-                try {
-                    const fileRef = ref(storage, imgToDelete.storagePath);
-                    await deleteObject(fileRef).catch(e => console.warn("No se pudo remover del almacenamiento en la nube:", e));
-                } catch (e) {
-                    console.error("Fallo eliminando de Storage:", e);
-                }
+                await deleteObject(ref(storage, imgToDelete.storagePath)).catch(e => console.warn(e));
             }
 
-            // 2. Remover del listado de Firestore
             updatedImages.splice(index, 1);
 
             if (isFirebaseActive) {
                 try {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoom.id);
-                    await updateDoc(docRef, { images: updatedImages });
-                } catch (e) {
-                    showToast("No se pudo actualizar la base de datos", "❌");
-                }
+                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoom.id), { images: updatedImages });
+                } catch (e) { showToast("Error al actualizar base de datos", "❌"); }
             } else {
                 currentRoom.images = updatedImages;
                 localStorage.setItem(`aedrop_${currentRoom.id}`, JSON.stringify(currentRoom));
-                // Sincronizar localmente
-                window.dispatchEvent(new StorageEvent('storage', {
-                    key: `aedrop_${currentRoom.id}`,
-                    newValue: JSON.stringify(currentRoom)
-                }));
+                window.dispatchEvent(new StorageEvent('storage', { key: `aedrop_${currentRoom.id}`, newValue: JSON.stringify(currentRoom) }));
                 renderGallery(updatedImages);
             }
-            showToast("Foto eliminada", "🗑️");
+            showToast("Archivo eliminado", "🗑");
         }
 
-        // --- RENDERIZADO DE GALERÍA ---
         function renderGallery(images) {
             galleryGrid.innerHTML = '';
-
             if (!images || images.length === 0) {
                 galleryGrid.appendChild(galleryEmpty);
-                galleryCount.textContent = "0 fotos";
+                galleryCount.textContent = "0 archivos";
                 btnDownloadAll.classList.add('hidden');
                 return;
             }
 
-            galleryCount.textContent = `${images.length} ${images.length === 1 ? 'foto' : 'fotos'}`;
+            galleryCount.textContent = `${images.length} ${images.length === 1 ? 'archivo' : 'archivos'}`;
             btnDownloadAll.classList.remove('hidden');
 
             images.forEach((img, index) => {
                 const card = document.createElement('div');
-                card.className = "group relative bg-slate-900 border border-slate-850 rounded-2xl overflow-hidden aspect-square flex flex-col justify-between shadow-md";
-
+                card.className = "group relative bg-neutral-900 border border-neutral-800/80 rounded-2xl overflow-hidden aspect-square flex flex-col justify-between shadow-lg transition-all duration-300 hover:shadow-black/60";
                 card.innerHTML = `
-                    <img src="${img.url}" class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300" alt="${img.name}" loading="lazy">
+                    <img src="${img.url}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="${img.name}" loading="lazy">
                     
-                    <!-- Botón de Eliminar "X" (Solo visible para Piloto/Admin) -->
+                    <!-- Boton eliminar solo visible para Emisor (Admin) -->
                     ${userRole === 'admin' ? `
-                        <button class="btn-delete-photo absolute top-2.5 right-2.5 p-1 bg-slate-950/80 hover:bg-red-600 rounded-lg text-slate-400 hover:text-white transition-colors duration-200 shadow-lg active:scale-90" data-index="${index}">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
+                        <button class="btn-delete-photo absolute top-2.5 right-2.5 p-1.5 bg-neutral-950/80 hover:bg-red-600 rounded-lg text-neutral-400 hover:text-white transition-all shadow-lg active:scale-95" data-index="${index}">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
                     ` : ''}
 
-                    <!-- Gradiente Inferior de Control -->
                     <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent p-2.5 flex items-center justify-between">
-                        <span class="text-[9px] text-slate-300 truncate pr-2 max-w-[100px] font-medium">${img.name}</span>
-                        <a href="${img.url}" download="${img.name || 'foto_dron.jpg'}" target="_blank" class="p-1.5 bg-slate-950/85 hover:bg-slate-800 rounded-lg text-slate-200 transition-all transform active:scale-95">
+                        <span class="text-[9px] text-neutral-300 truncate pr-2 max-w-[110px] font-medium mono-font">${img.name}</span>
+                        <a href="${img.url}" download="${img.name}" target="_blank" class="p-1.5 bg-neutral-950/85 hover:bg-neutral-800 rounded-lg text-neutral-200 transition-all border border-neutral-800 shadow-md active:scale-90">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
                         </a>
                     </div>
@@ -1049,130 +919,67 @@
                 galleryGrid.appendChild(card);
             });
 
-            // Registrar listeners para botones de eliminación
-            document.querySelectorAll('.btn-delete-photo').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const targetBtn = e.target.closest('.btn-delete-photo');
-                    const idx = parseInt(targetBtn.getAttribute('data-index'));
-                    deletePhoto(idx);
+            if (userRole === 'admin') {
+                document.querySelectorAll('.btn-delete-photo').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const idx = parseInt(e.target.closest('.btn-delete-photo').getAttribute('data-index'));
+                        deletePhoto(idx);
+                    });
                 });
-            });
+            }
         }
 
-        // --- EMPAQUETADO DESCARGA MASIVA (.ZIP DESDE URLS) ---
+        // --- DESCARGA ZIP ---
         btnDownloadAll.addEventListener('click', async () => {
             if (!currentRoom || !currentRoom.images || currentRoom.images.length === 0) return;
-
-            showToast("Comprimiendo fotos...", "📦");
-
+            showToast("Comprimiendo...", "📦");
             try {
                 const zip = new JSZip();
-                const images = currentRoom.images;
-
-                for (let i = 0; i < images.length; i++) {
-                    const img = images[i];
-                    let blobData;
+                for (let i = 0; i < currentRoom.images.length; i++) {
+                    const img = currentRoom.images[i];
                     if (img.url.startsWith('data:')) {
-                        const base64Data = img.url.split(',')[1];
-                        zip.file(img.name || `foto_${i + 1}.jpg`, base64Data, { base64: true });
+                        zip.file(img.name || `foto_${i + 1}.jpg`, img.url.split(',')[1], { base64: true });
                     } else {
-                        // Descargar el archivo binario desde Firebase Storage de forma asíncrona
-                        const response = await fetch(img.url);
-                        blobData = await response.blob();
+                        const blobData = await fetch(img.url).then(r => r.blob());
                         zip.file(img.name || `foto_${i + 1}.jpg`, blobData);
                     }
                 }
-
                 const content = await zip.generateAsync({ type: "blob" });
-                
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(content);
-                link.download = `Aedrop_${currentRoom.id}.zip`;
-                document.body.appendChild(link);
+                link.download = `Aedrop_Live_${currentRoom.id}.zip`;
                 link.click();
-                document.body.removeChild(link);
-
-                showToast("ZIP descargado con éxito", "✅");
-            } catch (err) {
-                console.error(err);
-                showToast("Fallo al crear archivo ZIP", "❌");
-            }
+                showToast("ZIP descargado", "✅");
+            } catch (err) { showToast("Error al empaquetar ZIP", "❌"); }
         });
 
-        // --- CONTADOR DE TIEMPO EXPIRACIÓN ---
-        let countdownTimer = null;
-        function updateCountdown(expireTimestamp) {
-            if (countdownTimer) clearInterval(countdownTimer);
-
-            function runTimer() {
-                const now = Date.now();
-                const diff = expireTimestamp - now;
-
-                if (diff <= 0) {
-                    clearInterval(countdownTimer);
-                    exitRoom();
-                    showToast("La sala de entrega ha caducado", "⌛");
-                    return;
-                }
-
-                const hours = Math.floor(diff / (1000 * 60 * 60));
-                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                countdownDisplay.textContent = `${hours}h ${minutes}m`;
-            }
-
-            runTimer();
-            countdownTimer = setInterval(runTimer, 60000);
-        }
-
-        // --- EVENTOS DE INTERFAZ ---
+        // --- INTERFAZ ---
         btnCreateRoom.addEventListener('click', createRoom);
         btnJoinRoom.addEventListener('click', () => {
-            const inputVal = inputRoomId.value;
-            if (inputVal) {
-                userRole = "client"; // Por defecto al ingresar código es cliente
-                joinRoom(inputVal);
-            } else {
-                showToast("Escribe un código de sala", "⌨️");
+            if (inputRoomId.value) {
+                userRole = "client"; 
+                joinRoom(inputRoomId.value);
             }
         });
-
-        btnLeaveRoom.addEventListener('click', destroyRoom);
+        btnLeaveRoom.addEventListener('click', handleLeaveOrDestroy);
         btnBackHome.addEventListener('click', exitRoom);
 
-        // Copiar Enlaces
         function copyRoomLink() {
             if (!currentRoom) return;
-            const clientJoinUrl = `${window.location.origin}${window.location.pathname}?room=${currentRoom.id}`;
-            
-            const tempInput = document.createElement("input");
-            tempInput.value = clientJoinUrl;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand("copy");
-            document.body.removeChild(tempInput);
-
-            showToast("Enlace de cliente copiado", "🔗");
+            const link = `${window.location.origin}${window.location.pathname}?room=${currentRoom.id}`;
+            const input = document.createElement("input");
+            input.value = link; document.body.appendChild(input);
+            input.select(); document.execCommand("copy");
+            document.body.removeChild(input);
+            showToast("Enlace de acceso copiado", "🔗");
         }
 
         btnCopyLink.addEventListener('click', copyRoomLink);
         btnShareClipboard.addEventListener('click', copyRoomLink);
-        btnMainShare.addEventListener('click', () => {
-            modalQr.classList.remove('hidden');
-        });
-
-        // Control Modal QR
-        btnShowQr.addEventListener('click', () => {
-            modalQr.classList.remove('hidden');
-        });
-
-        function closeModal() {
-            modalQr.classList.add('hidden');
-        }
-        btnCloseQr.addEventListener('click', closeModal);
-        modalQr.addEventListener('click', (e) => {
-            if (e.target === modalQr) closeModal();
-        });
+        btnMainShare.addEventListener('click', () => modalQr.classList.remove('hidden'));
+        btnShowQr.addEventListener('click', () => modalQr.classList.remove('hidden'));
+        btnCloseQr.addEventListener('click', () => modalQr.classList.add('hidden'));
 
     </script>
 </body>
