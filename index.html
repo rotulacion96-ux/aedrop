@@ -103,11 +103,11 @@
             <!-- HISTORIAL DE SALAS ACTIVAS -->
             <div id="history-section" class="bg-slate-950/60 border border-slate-900 p-4 rounded-2xl space-y-3">
                 <div class="flex items-center justify-between">
-                    <h3 class="font-bold text-[10px] uppercase tracking-wider text-slate-500">Historial de salas (24hs)</h3>
+                    <h3 class="font-bold text-[10px] uppercase tracking-wider text-slate-500">Historial de salas</h3>
                     <button id="btn-clear-history" class="text-[9px] text-red-400 hover:text-red-300 transition-colors uppercase font-semibold">Limpiar</button>
                 </div>
                 <!-- Contenedor del listado -->
-                <div id="history-list" class="space-y-2 max-h-[160px] overflow-y-auto pr-1">
+                <div id="history-list" class="space-y-2 max-h-[220px] overflow-y-auto pr-1">
                     <!-- Dinámico -->
                     <p class="text-[10px] text-slate-600 text-center py-2">No tienes entregas recientes registradas.</p>
                 </div>
@@ -130,18 +130,18 @@
                         </div>
                     </div>
                     <div class="text-right">
-                        <span class="text-[9px] uppercase tracking-widest text-slate-500 block font-bold">Tiempo Restante</span>
+                        <span id="label-countdown" class="text-[9px] uppercase tracking-widest text-slate-500 block font-bold">Tiempo Restante</span>
                         <span id="room-countdown" class="text-xs text-slate-300 font-bold mono-font">23h 59m</span>
                     </div>
                 </div>
 
                 <!-- Botones de Control (Modo Piloto) -->
                 <div id="admin-actions" class="flex gap-2">
-                    <button id="btn-show-qr" class="flex-1 bg-slate-800 hover:bg-slate-750 text-xs py-2 px-3 rounded-xl font-semibold flex items-center justify-center gap-2 border border-slate-750 transition-colors">
+                    <button id="btn-show-qr" class="flex-1 bg-slate-800 hover:bg-slate-750 text-xs py-2 px-3 rounded-xl font-semibold flex items-center justify-center gap-2 border border-slate-755 transition-colors">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5zM13.5 16.25a.75.75 0 01.75-.75h1.125a.75.75 0 01.75.75v1.125a.75.75 0 01-.75.75h-1.125a.75.75 0 01-.75-.75V16.25z" /></svg>
                         Compartir QR
                     </button>
-                    <button id="btn-leave-room" class="bg-slate-800 hover:bg-red-950 hover:text-red-400 text-xs py-2 px-3 rounded-xl font-semibold border border-slate-750 hover:border-red-900 transition-all">
+                    <button id="btn-leave-room" class="bg-slate-800 hover:bg-red-950 hover:text-red-400 text-xs py-2 px-3 rounded-xl font-semibold border border-slate-755 hover:border-red-900 transition-all">
                         Cerrar Sala
                     </button>
                 </div>
@@ -156,7 +156,7 @@
                         <span class="text-[9px] text-slate-500 font-bold uppercase">Calidad:</span>
                         <select id="select-quality" class="bg-slate-850 border border-slate-700 text-[10px] rounded px-1.5 py-0.5 text-slate-300 focus:outline-none">
                             <option value="0.7">Optimizado (Para Datos)</option>
-                            <option value="0.95" selected>Máxima Calidad</option>
+                            <option value="1.0" selected>Calidad Original (100%)</option>
                         </select>
                     </div>
                 </div>
@@ -168,7 +168,7 @@
                         <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
                     </div>
                     <span class="text-xs font-semibold text-slate-300">Seleccionar fotos de dron</span>
-                    <span class="text-[9px] text-slate-500 font-medium">Puedes elegir múltiples fotos al mismo tiempo</span>
+                    <span class="text-[9px] text-slate-500 font-medium">Soporta imágenes pesadas de 10MB+</span>
                 </label>
             </div>
 
@@ -250,6 +250,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getStorage, ref, uploadString, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
         // Variables Globales provistas por el Entorno / Fallbacks
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'aedrop-premium-v1';
@@ -264,7 +265,7 @@
             appId: "1:123456:web:123"
         };
 
-        let app, auth, db;
+        let app, auth, db, storage;
         let isFirebaseActive = false;
 
         try {
@@ -272,6 +273,7 @@
                 app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
+                storage = getStorage(app);
                 isFirebaseActive = true;
             }
         } catch (err) {
@@ -291,6 +293,7 @@
         const btnJoinRoom = document.getElementById('btn-join-room');
         const inputRoomId = document.getElementById('input-room-id');
         const displayRoomId = document.getElementById('display-room-id');
+        const labelCountdown = document.getElementById('label-countdown');
         const countdownDisplay = document.getElementById('room-countdown');
         const btnCopyLink = document.getElementById('btn-copy-link');
         const btnShowQr = document.getElementById('btn-show-qr');
@@ -356,39 +359,89 @@
             renderHistory();
         }
 
+        function removeFromHistory(roomId) {
+            let history = getHistory();
+            history = history.filter(item => item.id !== roomId);
+            localStorage.setItem('aedrop_history_v1', JSON.stringify(history));
+            renderHistory();
+            showToast("Sala removida de tu historial", "🗑️");
+        }
+
+        async function reactivateRoom(roomId) {
+            const newExpires = Date.now() + (24 * 60 * 60 * 1000); // 24hs más
+            if (isFirebaseActive) {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomId);
+                    await updateDoc(docRef, { expiresAt: newExpires });
+                    showToast("Sala reactivada por 24 horas", "🔄");
+                } catch (e) {
+                    showToast("Fallo al reactivar en red", "❌");
+                    return;
+                }
+            } else {
+                const stored = localStorage.getItem(`aedrop_${roomId}`);
+                if (stored) {
+                    const roomData = JSON.parse(stored);
+                    roomData.expiresAt = newExpires;
+                    localStorage.setItem(`aedrop_${roomId}`, JSON.stringify(roomData));
+                }
+                showToast("Sala Demo reactivada", "🔄");
+            }
+            saveToHistory(roomId, newExpires, 'admin');
+            userRole = "admin";
+            joinRoom(roomId);
+        }
+
         function renderHistory() {
             const history = getHistory();
             historyList.innerHTML = '';
 
-            // Filtrar expirados de más de 24hs
-            const activeHistory = history.filter(item => item.expiresAt > Date.now());
-
-            if (activeHistory.length === 0) {
+            if (history.length === 0) {
                 historyList.innerHTML = `<p class="text-[10px] text-slate-600 text-center py-2">No tienes entregas recientes registradas.</p>`;
                 return;
             }
 
-            activeHistory.forEach(item => {
+            history.forEach(item => {
+                const isExpired = Date.now() > item.expiresAt;
                 const expiresDate = new Date(item.expiresAt);
                 const isPilot = item.role === 'admin';
                 const div = document.createElement('div');
-                div.className = "flex items-center justify-between p-2.5 bg-slate-900 border border-slate-850 rounded-xl";
+                div.className = "flex items-center justify-between p-2.5 bg-slate-900 border border-slate-850 rounded-xl gap-2";
+                
+                let actionButton = '';
+                if (isExpired) {
+                    if (isPilot) {
+                        actionButton = `<button class="btn-reactivate bg-brand-500 hover:bg-slate-500 text-white font-bold text-[9px] px-2.5 py-1.5 rounded-lg uppercase transition-all" data-id="${item.id}">Reactivar</button>`;
+                    } else {
+                        actionButton = `<span class="text-[9px] text-red-500 font-semibold uppercase">Expirado</span>`;
+                    }
+                } else {
+                    actionButton = `<button class="btn-reconnect bg-slate-800 hover:bg-slate-750 text-slate-300 font-bold text-[9px] px-2.5 py-1.5 rounded-lg uppercase transition-all" data-id="${item.id}" data-role="${item.role}">Reconectar</button>`;
+                }
+
                 div.innerHTML = `
-                    <div>
+                    <div class="flex-grow min-w-0">
                         <div class="flex items-center gap-1.5">
                             <span class="mono-font text-xs font-bold text-white">${item.id}</span>
-                            <span class="text-[8px] px-1 rounded ${isPilot ? 'bg-slate-100 text-slate-950 font-bold' : 'bg-slate-800 text-slate-400'} uppercase">${isPilot ? 'Piloto' : 'Cliente'}</span>
+                            <span class="text-[8px] px-1 rounded ${isPilot ? 'bg-slate-100 text-slate-950 font-bold' : 'bg-slate-850 text-slate-400'} uppercase">${isPilot ? 'Piloto' : 'Cliente'}</span>
                         </div>
-                        <span class="text-[8px] text-slate-500 block mt-0.5">Expira: ${expiresDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} del ${expiresDate.toLocaleDateString([], {day: 'numeric', month: 'short'})}</span>
+                        <span class="text-[8px] text-slate-500 block mt-0.5 truncate">
+                            ${isExpired ? 'Expiró el' : 'Expira:'} ${expiresDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} del ${expiresDate.toLocaleDateString([], {day: 'numeric', month: 'short'})}
+                        </span>
                     </div>
-                    <button class="btn-reconnect bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-[9px] px-3 py-1.5 rounded-lg uppercase transition-all" data-id="${item.id}" data-role="${item.role}">
-                        Reconectar
-                    </button>
+                    <div class="flex items-center gap-1.5 flex-shrink-0">
+                        ${actionButton}
+                        <button class="btn-delete-history text-slate-500 hover:text-red-400 p-1.5 transition-colors" data-id="${item.id}" title="Quitar del historial">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </div>
                 `;
                 historyList.appendChild(div);
             });
 
-            // Añadir eventos a botones de reconexión
+            // Listeners de reconexión
             document.querySelectorAll('.btn-reconnect').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const id = e.target.getAttribute('data-id');
@@ -397,10 +450,26 @@
                     joinRoom(id);
                 });
             });
+
+            // Listeners de reactivación
+            document.querySelectorAll('.btn-reactivate').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    reactivateRoom(id);
+                });
+            });
+
+            // Listeners de eliminación de historial
+            document.querySelectorAll('.btn-delete-history').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.target.closest('.btn-delete-history').getAttribute('data-id');
+                    removeFromHistory(id);
+                });
+            });
         }
 
         btnClearHistory.addEventListener('click', () => {
-            if (confirm("¿Seguro que deseas limpiar tu historial reciente?")) {
+            if (confirm("¿Seguro que deseas limpiar tu historial reciente de salas?")) {
                 localStorage.removeItem('aedrop_history_v1');
                 renderHistory();
                 showToast("Historial borrado", "🗑️");
@@ -458,12 +527,16 @@
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
                 reader.onload = function(event) {
+                    // Si se solicita calidad 100% y el archivo ya es JPEG/PNG, evitamos recomprimir en canvas si pesa menos de 10MB
+                    // Pero para optimizar la velocidad de red en carga, lo pasamos por canvas para limitar la escala a un plano de alta fidelidad.
                     const img = new Image();
                     img.src = event.target.result;
                     img.onload = function() {
                         const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 1920; 
-                        const MAX_HEIGHT = 1920;
+                        
+                        // Máxima resolución ultra-nítida de renderizado (Adecuado para pantallas 4K)
+                        const MAX_WIDTH = 2560; 
+                        const MAX_HEIGHT = 2560;
                         let width = img.width;
                         let height = img.height;
 
@@ -484,6 +557,7 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
 
+                        // Exportar
                         const compressedBase64 = canvas.toDataURL('image/jpeg', parseFloat(quality));
                         resolve({
                             name: file.name,
@@ -599,12 +673,14 @@
                 adminActions.classList.remove('hidden');
                 adminUploadPanel.classList.remove('hidden');
                 btnMainShare.classList.remove('hidden');
+                labelCountdown.textContent = "Tiempo Restante";
             } else {
                 roleBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span><span>CLIENTE · CONECTADO</span>`;
                 roleBadge.className = "px-2.5 py-1 rounded-full text-[9px] font-bold tracking-wider uppercase bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center gap-1.5";
                 adminActions.classList.add('hidden');
                 adminUploadPanel.classList.add('hidden');
                 btnMainShare.classList.add('hidden');
+                labelCountdown.textContent = "Disponible para descargar por";
             }
 
             // Suscribirse a cambios en tiempo real
@@ -675,13 +751,27 @@
             renderHistory();
         }
 
-        // Cierre de sala definitivo por el piloto
+        // Cierre de sala definitivo por el piloto (limpia Storage e hilos Firestore)
         async function destroyRoom() {
             if (!currentRoom) return;
-            if (confirm("¿Seguro de que deseas cerrar esta sala? Se perderán las fotos asociadas.")) {
+            if (confirm("¿Seguro de que deseas cerrar esta sala? Se perderán todas las fotos asociadas de la nube.")) {
                 const rId = currentRoom.id;
+                
+                showToast("Borrando archivos...", "🗑️");
+
                 if (isFirebaseActive) {
                     try {
+                        // 1. Borrar todas las imágenes alojadas en Storage asociadas a la sala
+                        if (currentRoom.images && currentRoom.images.length > 0) {
+                            for (const img of currentRoom.images) {
+                                if (img.storagePath) {
+                                    const fileRef = ref(storage, img.storagePath);
+                                    await deleteObject(fileRef).catch(e => console.warn("Error borrando de Storage:", e));
+                                }
+                            }
+                        }
+
+                        // 2. Borrar documento de la sala en Firestore
                         const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', rId);
                         await deleteDoc(docRef);
                     } catch (e) {
@@ -695,7 +785,7 @@
             }
         }
 
-        // --- SUBIDA DE IMÁGENES ---
+        // --- SUBIDA DE IMÁGENES (UPGRADE: FIREBASE STORAGE) ---
         inputFileSelector.addEventListener('change', async (e) => {
             const files = Array.from(e.target.files);
             if (!files.length) return;
@@ -717,10 +807,34 @@
         async function uploadPhoto(photoObj) {
             if (!currentRoom) return;
 
+            showToast(`Subiendo ${photoObj.name}...`, "☁️");
+
+            let finalUrl = photoObj.base64;
+            let storagePath = null;
+
+            if (isFirebaseActive) {
+                try {
+                    // Ruta estricta de guardado en Firebase Storage
+                    storagePath = `artifacts/${appId}/public/data/rooms/${currentRoom.id}/${Date.now()}_${photoObj.name}`;
+                    const storageRef = ref(storage, storagePath);
+                    
+                    // Subida en Base64 seguro (data_url)
+                    await uploadString(storageRef, photoObj.base64, 'data_url');
+                    
+                    // Obtener URL de descarga pública
+                    finalUrl = await getDownloadURL(storageRef);
+                } catch (e) {
+                    console.error("Error al subir a Firebase Storage:", e);
+                    showToast("Fallo de carga en Storage", "⚠️");
+                    return;
+                }
+            }
+
             const updatedImages = [...(currentRoom.images || [])];
             updatedImages.push({
                 name: photoObj.name,
-                url: photoObj.base64,
+                url: finalUrl,
+                storagePath: storagePath, // Guardamos la ruta del archivo para poder borrarlo después
                 timestamp: Date.now()
             });
 
@@ -729,7 +843,7 @@
                     const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoom.id);
                     await updateDoc(docRef, { images: updatedImages });
                 } catch (e) {
-                    showToast("Fallo al subir a Firebase", "⚠️");
+                    showToast("Fallo al registrar foto en base de datos", "⚠️");
                 }
             } else {
                 currentRoom.images = updatedImages;
@@ -741,13 +855,28 @@
                 }));
                 renderGallery(updatedImages);
             }
+            showToast("Foto subida correctamente", "✅");
         }
 
-        // --- ELIMINAR FOTOS (BOTÓN "X" PARA PILOTOS) ---
+        // --- ELIMINAR FOTOS INDIVIDUALES (PILOTO) ---
         async function deletePhoto(index) {
             if (userRole !== 'admin' || !currentRoom) return;
             
+            showToast("Eliminando foto...", "🗑️");
             const updatedImages = [...(currentRoom.images || [])];
+            const imgToDelete = updatedImages[index];
+
+            // 1. Borrar de Storage si aplica
+            if (isFirebaseActive && imgToDelete.storagePath) {
+                try {
+                    const fileRef = ref(storage, imgToDelete.storagePath);
+                    await deleteObject(fileRef).catch(e => console.warn("No se pudo remover del almacenamiento en la nube:", e));
+                } catch (e) {
+                    console.error("Fallo eliminando de Storage:", e);
+                }
+            }
+
+            // 2. Remover del listado de Firestore
             updatedImages.splice(index, 1);
 
             if (isFirebaseActive) {
@@ -755,12 +884,12 @@
                     const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoom.id);
                     await updateDoc(docRef, { images: updatedImages });
                 } catch (e) {
-                    showToast("No se pudo eliminar la foto", "❌");
+                    showToast("No se pudo actualizar la base de datos", "❌");
                 }
             } else {
                 currentRoom.images = updatedImages;
                 localStorage.setItem(`aedrop_${currentRoom.id}`, JSON.stringify(currentRoom));
-                // Disparar sincronización simulada
+                // Sincronizar localmente
                 window.dispatchEvent(new StorageEvent('storage', {
                     key: `aedrop_${currentRoom.id}`,
                     newValue: JSON.stringify(currentRoom)
@@ -803,7 +932,7 @@
                     <!-- Gradiente Inferior de Control -->
                     <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent p-2.5 flex items-center justify-between">
                         <span class="text-[9px] text-slate-300 truncate pr-2 max-w-[100px] font-medium">${img.name}</span>
-                        <a href="${img.url}" download="${img.name || 'foto_dron.jpg'}" class="p-1.5 bg-slate-950/85 hover:bg-slate-800 rounded-lg text-slate-200 transition-all transform active:scale-95">
+                        <a href="${img.url}" download="${img.name || 'foto_dron.jpg'}" target="_blank" class="p-1.5 bg-slate-950/85 hover:bg-slate-800 rounded-lg text-slate-200 transition-all transform active:scale-95">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
                         </a>
                     </div>
@@ -815,7 +944,6 @@
             document.querySelectorAll('.btn-delete-photo').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    // Obtener elemento botón por si el clic se dio en el icono SVG
                     const targetBtn = e.target.closest('.btn-delete-photo');
                     const idx = parseInt(targetBtn.getAttribute('data-index'));
                     deletePhoto(idx);
@@ -823,7 +951,7 @@
             });
         }
 
-        // --- EMPAQUETADO DESCARGA MASIVA (.ZIP) ---
+        // --- EMPAQUETADO DESCARGA MASIVA (.ZIP DESDE URLS) ---
         btnDownloadAll.addEventListener('click', async () => {
             if (!currentRoom || !currentRoom.images || currentRoom.images.length === 0) return;
 
@@ -833,12 +961,20 @@
                 const zip = new JSZip();
                 const images = currentRoom.images;
 
-                images.forEach((img, index) => {
-                    const base64Data = img.url.split(',')[1];
-                    const extension = img.name.split('.').pop() || 'jpg';
-                    const fileName = img.name ? img.name : `foto_${index + 1}.${extension}`;
-                    zip.file(fileName, base64Data, { base64: true });
-                });
+                for (let i = 0; i < images.length; i++) {
+                    const img = images[i];
+                    // Si es una URL externa (Storage), descargamos el blob
+                    let blobData;
+                    if (img.url.startsWith('data:')) {
+                        const base64Data = img.url.split(',')[1];
+                        zip.file(img.name || `foto_${i + 1}.jpg`, base64Data, { base64: true });
+                    } else {
+                        // Descargar el archivo binario desde Firebase Storage
+                        const response = await fetch(img.url);
+                        blobData = await response.blob();
+                        zip.file(img.name || `foto_${i + 1}.jpg`, blobData);
+                    }
+                }
 
                 const content = await zip.generateAsync({ type: "blob" });
                 
