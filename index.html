@@ -1,0 +1,733 @@
+
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aedrop // Share Drone Photos</title>
+    <!-- Tailwind CSS para diseño moderno -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f8fafc',
+                            500: '#64748b', // Gris Pizarra / Titanio
+                            600: '#475569',
+                            950: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts & JSZip para empaquetar descargas -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b0f17; /* Slate oscuro premium */
+        }
+        .mono-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between selection:bg-slate-700 selection:text-white">
+
+    <!-- HEADER DE LA APP -->
+    <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-md mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <!-- Icono de Dron Minimalista -->
+                <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 009 11a13.917 13.917 0 00-3.44-9.571M2.002 16h2.527m14.943 0h2.528M3.003 12h2.527m12.943 0h2.528M4.003 8h2.527m12.943 0h2.528M12 3v3h3a9 9 0 010 18h-3" />
+                </svg>
+                <span class="font-extrabold tracking-widest text-sm text-white uppercase">AE<span class="text-slate-400 font-light">DROP</span></span>
+            </div>
+            <!-- Rol en la Sala (Piloto o Cliente) -->
+            <div id="role-badge" class="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase bg-slate-800 border border-slate-700 text-slate-300">
+                PÁGINA PRINCIPAL
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="flex-grow p-4 max-w-md mx-auto w-full flex flex-col justify-start gap-4">
+
+        <!-- PANTALLA 1: ACCESO (CREAR O UNIRSE A SALA) -->
+        <div id="screen-auth" class="space-y-4 my-auto">
+            <div class="bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-850 p-6 rounded-3xl text-center shadow-2xl">
+                <h1 class="text-2xl font-bold tracking-tight text-white mb-2">Entrega de Tomas Aéreas</h1>
+                <p class="text-xs text-slate-400 mb-6">Genera una sala de entrega express con link directo o código QR. Disponibilidad garantizada por 24 horas.</p>
+                
+                <!-- Crear Sala (Piloto) -->
+                <button id="btn-create-room" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-950 font-bold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 text-xs uppercase tracking-wider transition-all shadow-lg">
+                    Crear Nueva Sala (Piloto)
+                </button>
+                
+                <div class="relative flex py-4 items-center">
+                    <div class="flex-grow border-t border-slate-800"></div>
+                    <span class="flex-shrink mx-4 text-[10px] uppercase tracking-widest text-slate-600 font-semibold">reconectar o unirse</span>
+                    <div class="flex-grow border-t border-slate-800"></div>
+                </div>
+
+                <!-- Unirse a Sala Existente por ID -->
+                <div class="space-y-3">
+                    <input id="input-room-id" type="text" placeholder="CÓDIGO DE SALA (EJ: DRN-8392)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-center uppercase tracking-widest font-bold text-white placeholder-slate-600 focus:outline-none focus:border-slate-500 text-xs">
+                    <button id="btn-join-room" class="w-full bg-slate-850 hover:bg-slate-800 text-slate-300 font-semibold py-3 px-6 rounded-xl text-xs uppercase tracking-wider transition-all border border-slate-850">
+                        Acceder a la Sala
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA 2: SALA ACTIVA (PANEL DE CONTROL & GALERÍA) -->
+        <div id="screen-room" class="hidden space-y-4">
+            
+            <!-- Info de la Sala -->
+            <div class="bg-slate-900/60 border border-slate-850 p-4 rounded-2xl flex flex-col gap-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="text-[9px] uppercase tracking-widest text-slate-500 font-bold">Código de Entrega</span>
+                        <div class="flex items-center gap-2">
+                            <h2 id="display-room-id" class="text-lg font-bold text-white mono-font">#DRN-XXXX</h2>
+                            <button id="btn-copy-link" class="text-slate-400 hover:text-white p-1 rounded transition-colors" title="Copiar link de cliente">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5A3.375 3.375 0 006.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0015 2.25h-1.5a2.251 2.251 0 00-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 00-9-9z" /></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[9px] uppercase tracking-widest text-slate-500 block font-bold">Válida por</span>
+                        <span id="room-countdown" class="text-xs text-slate-300 font-semibold mono-font">23h 59m</span>
+                    </div>
+                </div>
+
+                <!-- Botones Rápidos (Opciones Piloto) -->
+                <div id="admin-actions" class="flex gap-2">
+                    <button id="btn-show-qr" class="flex-1 bg-slate-800 hover:bg-slate-750 text-xs py-2 px-3 rounded-lg font-medium flex items-center justify-center gap-2 border border-slate-700 transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5zM13.5 16.25a.75.75 0 01.75-.75h1.125a.75.75 0 01.75.75v1.125a.75.75 0 01-.75.75h-1.125a.75.75 0 01-.75-.75V16.25zM17.625 15.5a.75.75 0 00-.75.75v1.125c0 .414.336.75.75.75h1.125a.75.75 0 00.75-.75V16.25a.75.75 0 00-.75-.75h-1.125zM16.25 13.5a.75.75 0 01.75-.75h1.125a.75.75 0 01.75.75v1.125a.75.75 0 01-.75.75h-1.125a.75.75 0 01-.75-.75V13.5z" /></svg>
+                        Compartir QR
+                    </button>
+                    <button id="btn-leave-room" class="bg-slate-800 hover:bg-red-950 hover:text-red-400 text-xs py-2 px-3 rounded-lg font-medium border border-slate-700 hover:border-red-900 transition-all">
+                        Cerrar Sala
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panel de Carga de Fotos (SOLO VISIBLE PARA EL PILOTO) -->
+            <div id="admin-upload-panel" class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-bold text-xs uppercase tracking-wider text-slate-300">📤 Cargar Imágenes</h3>
+                    <!-- Selector de Calidad -->
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] text-slate-500 font-semibold uppercase">Calidad:</span>
+                        <select id="select-quality" class="bg-slate-850 border border-slate-700 text-[10px] rounded px-1.5 py-0.5 text-slate-300 focus:outline-none">
+                            <option value="0.6">Optimizado (Datos)</option>
+                            <option value="0.9" selected>Máxima Calidad</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Input Selector -->
+                <label for="input-file-selector" class="border border-dashed border-slate-700 hover:border-slate-500 bg-slate-950 hover:bg-slate-900/50 rounded-xl p-5 text-center cursor-pointer flex flex-col items-center justify-center gap-2 group transition-all">
+                    <input type="file" id="input-file-selector" class="hidden" accept="image/*" multiple>
+                    <div class="p-2.5 bg-slate-900 rounded-full group-hover:scale-105 transition-transform border border-slate-800">
+                        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
+                    </div>
+                    <span class="text-xs font-semibold text-slate-300">Seleccionar fotos de dron</span>
+                    <span class="text-[9px] text-slate-500 font-medium">Permite seleccionar múltiples archivos</span>
+                </label>
+            </div>
+
+            <!-- Galería de la Sala -->
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-bold text-xs uppercase tracking-wider text-slate-400">🖼️ Galería Compartida</h3>
+                    <span id="gallery-count" class="text-xs text-slate-500 mono-font">0 fotos</span>
+                </div>
+
+                <!-- Botón de Descarga Masiva ZIP -->
+                <button id="btn-download-all" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold py-3 px-4 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 hidden">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
+                    Descargar todo (.ZIP)
+                </button>
+
+                <!-- Grid de Fotos -->
+                <div id="gallery-grid" class="grid grid-cols-2 gap-2">
+                    <!-- Estado Vacío -->
+                    <div id="gallery-empty" class="col-span-2 bg-slate-900/40 border border-slate-850 rounded-xl py-12 text-center text-slate-500">
+                        <p class="text-xs font-semibold">Esperando fotos...</p>
+                        <p class="text-[10px] mt-1 text-slate-600">Las fotos cargadas aparecerán aquí al instante.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-900 bg-slate-950 px-4 py-4 mt-8">
+        <div class="max-w-md mx-auto text-center">
+            <p class="text-[10px] text-slate-500 font-semibold tracking-wider uppercase">Aedrop Pro — Enterprise Delivery</p>
+        </div>
+    </footer>
+
+    <!-- MODAL DE QR (COMPARTIR) -->
+    <div id="modal-qr" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-sm p-6 space-y-4 relative">
+            <button id="btn-close-qr" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            <div class="text-center">
+                <span class="text-[10px] uppercase tracking-widest text-slate-400 font-extrabold">Escanear para acceder</span>
+                <h3 id="modal-room-id" class="text-lg font-bold text-white mono-font mt-1">#DRN-XXXX</h3>
+                <p class="text-[11px] text-slate-400 mt-1">Comparte este QR o el enlace para que el cliente acceda a la entrega.</p>
+            </div>
+            
+            <!-- Contenedor QR -->
+            <div class="bg-white p-4 rounded-xl aspect-square flex items-center justify-center max-w-[220px] mx-auto shadow-inner">
+                <img id="qr-image" src="" alt="Código QR de la sala" class="w-full h-full">
+            </div>
+
+            <!-- Botón de Enlace -->
+            <button id="btn-share-clipboard" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs py-2.5 rounded-lg font-semibold border border-slate-700 transition-colors">
+                Copiar enlace de acceso directo
+            </button>
+        </div>
+    </div>
+
+    <!-- NOTIFICACIÓN TIPO TOAST -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900 border border-slate-700 text-slate-100 px-4 py-2.5 rounded-xl shadow-2xl text-xs font-semibold flex items-center gap-2 transition-all duration-300 opacity-0 pointer-events-none transform translate-y-2">
+        <span id="toast-icon">✨</span>
+        <span id="toast-message">Copiado al portapapeles</span>
+    </div>
+
+    <!-- LÓGICA DE NEGOCIO -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Variables Globales provistas por el Entorno / Fallbacks
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'aedrop-share-v1';
+        const rawFirebaseConfig = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
+
+        const firebaseConfig = rawFirebaseConfig ? JSON.parse(rawFirebaseConfig) : {
+            apiKey: "", 
+            authDomain: "aedrop-dummy.firebaseapp.com",
+            projectId: "aedrop-dummy",
+            storageBucket: "aedrop-dummy.appspot.com",
+            messagingSenderId: "123456",
+            appId: "1:123456:web:123"
+        };
+
+        let app, auth, db;
+        let isFirebaseActive = false;
+
+        try {
+            if (rawFirebaseConfig) {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                isFirebaseActive = true;
+            }
+        } catch (err) {
+            console.error("Firebase no activo:", err);
+        }
+
+        // --- MODELO ---
+        let currentRoom = null;
+        let activeRoomUnsubscribe = null;
+        let userRole = "client"; // 'admin' (Piloto) o 'client' (Visualización)
+
+        // --- ELEMENTOS DOM ---
+        const roleBadge = document.getElementById('role-badge');
+        const screenAuth = document.getElementById('screen-auth');
+        const screenRoom = document.getElementById('screen-room');
+        const btnCreateRoom = document.getElementById('btn-create-room');
+        const btnJoinRoom = document.getElementById('btn-join-room');
+        const inputRoomId = document.getElementById('input-room-id');
+        const displayRoomId = document.getElementById('display-room-id');
+        const countdownDisplay = document.getElementById('room-countdown');
+        const btnCopyLink = document.getElementById('btn-copy-link');
+        const btnShowQr = document.getElementById('btn-show-qr');
+        const btnLeaveRoom = document.getElementById('btn-leave-room');
+        const selectQuality = document.getElementById('select-quality');
+        const inputFileSelector = document.getElementById('input-file-selector');
+        const galleryGrid = document.getElementById('gallery-grid');
+        const galleryCount = document.getElementById('gallery-count');
+        const galleryEmpty = document.getElementById('gallery-empty');
+        const modalQr = document.getElementById('modal-qr');
+        const btnCloseQr = document.getElementById('btn-close-qr');
+        const qrImage = document.getElementById('qr-image');
+        const btnShareClipboard = document.getElementById('btn-share-clipboard');
+        const modalRoomId = document.getElementById('modal-room-id');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+        const toastIcon = document.getElementById('toast-icon');
+
+        // Paneles Condicionales Piloto vs Cliente
+        const adminActions = document.getElementById('admin-actions');
+        const adminUploadPanel = document.getElementById('admin-upload-panel');
+        const btnDownloadAll = document.getElementById('btn-download-all');
+
+        // --- TOAST ---
+        function showToast(message, icon = "✨") {
+            toastMessage.textContent = message;
+            toastIcon.textContent = icon;
+            toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
+            toast.classList.add('opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
+            }, 2500);
+        }
+
+        // --- AUTENTICACIÓN ---
+        let authUser = null;
+        async function authenticate() {
+            if (!isFirebaseActive) return;
+            try {
+                await signInAnonymously(auth);
+            } catch (err) {
+                console.error("Autenticación fallida:", err);
+            }
+        }
+
+        if (isFirebaseActive) {
+            onAuthStateChanged(auth, (user) => {
+                authUser = user;
+                checkURLParameters();
+            });
+            authenticate();
+        } else {
+            checkURLParameters();
+        }
+
+        // --- CHEQUEO DE PARÁMETROS DE URL ---
+        function checkURLParameters() {
+            const params = new URLSearchParams(window.location.search);
+            const rId = params.get('room');
+            const adminMode = params.get('role');
+
+            if (rId) {
+                userRole = adminMode === 'pilot' ? 'admin' : 'client';
+                joinRoom(rId);
+            }
+        }
+
+        // Generador de ID corto
+        function generateRoomID() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let id = '';
+            for (let i = 4; i > 0; i--) {
+                id += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return `DRN-${id}`;
+        }
+
+        // Compresor de Imágenes
+        function compressImage(file, quality) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 1920; 
+                        const MAX_HEIGHT = 1920;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height *= MAX_WIDTH / width;
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width *= MAX_HEIGHT / height;
+                                height = MAX_HEIGHT;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        const compressedBase64 = canvas.toDataURL('image/jpeg', parseFloat(quality));
+                        resolve({
+                            name: file.name,
+                            base64: compressedBase64
+                        });
+                    };
+                };
+            });
+        }
+
+        // --- GESTIÓN DE SALAS ---
+
+        // Crear Sala (Piloto)
+        async function createRoom() {
+            const rId = generateRoomID();
+            const timestamp = Date.now();
+            const expirationTime = timestamp + (24 * 60 * 60 * 1000); // 24hs
+
+            const newRoomData = {
+                id: rId,
+                createdAt: timestamp,
+                expiresAt: expirationTime,
+                images: []
+            };
+
+            userRole = "admin"; // Si yo la creo, soy Piloto
+
+            if (isFirebaseActive) {
+                if (!authUser) await authenticate();
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', rId);
+                    await setDoc(docRef, newRoomData);
+                } catch (e) {
+                    showToast("Error de conexión", "❌");
+                    return;
+                }
+            } else {
+                localStorage.setItem(`aedrop_${rId}`, JSON.stringify(newRoomData));
+            }
+
+            enterRoom(newRoomData);
+        }
+
+        // Unirse a Sala
+        async function joinRoom(rId) {
+            rId = rId.trim().toUpperCase().replace('#', '');
+            if (!rId) return;
+
+            if (isFirebaseActive) {
+                if (!authUser) await authenticate();
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', rId);
+                    const docSnap = await getDoc(docRef);
+
+                    if (docSnap.exists()) {
+                        const roomData = docSnap.data();
+                        if (Date.now() > roomData.expiresAt) {
+                            showToast("Esta sala ha expirado", "⌛");
+                            return;
+                        }
+                        enterRoom(roomData);
+                    } else {
+                        showToast("La sala no existe", "🔎");
+                    }
+                } catch (e) {
+                    showToast("Error al conectar", "❌");
+                }
+            } else {
+                const stored = localStorage.getItem(`aedrop_${rId}`);
+                if (stored) {
+                    enterRoom(JSON.parse(stored));
+                } else {
+                    // Creación temporal simulada en modo demo para que funcione la visualización local sin Firestore
+                    const timestamp = Date.now();
+                    const expirationTime = timestamp + (24 * 60 * 60 * 1000);
+                    const mockRoom = {
+                        id: rId,
+                        createdAt: timestamp,
+                        expiresAt: expirationTime,
+                        images: []
+                    };
+                    localStorage.setItem(`aedrop_${rId}`, JSON.stringify(mockRoom));
+                    enterRoom(mockRoom);
+                }
+            }
+        }
+
+        // Configurar e ingresar a la interfaz activa
+        function enterRoom(roomData) {
+            currentRoom = roomData;
+            
+            // Actualizar URL según el Rol
+            const roleParam = userRole === 'admin' ? '&role=pilot' : '';
+            window.history.pushState({}, '', `?room=${roomData.id}${roleParam}`);
+
+            displayRoomId.textContent = `#${roomData.id}`;
+            modalRoomId.textContent = `#${roomData.id}`;
+
+            // Configurar Countdown de 24 Horas
+            updateCountdown(roomData.expiresAt);
+
+            // Generar QR para el cliente
+            const clientJoinUrl = `${window.location.origin}${window.location.pathname}?room=${roomData.id}`;
+            qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(clientJoinUrl)}`;
+
+            // Control de vistas (Piloto vs Cliente)
+            if (userRole === "admin") {
+                roleBadge.textContent = "Modo: Piloto";
+                roleBadge.className = "px-2.5 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase bg-slate-100 text-slate-900";
+                adminActions.classList.remove('hidden');
+                adminUploadPanel.classList.remove('hidden');
+            } else {
+                roleBadge.textContent = "Modo: Cliente";
+                roleBadge.className = "px-2.5 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase bg-slate-800 text-slate-400 border border-slate-750";
+                adminActions.classList.add('hidden');
+                adminUploadPanel.classList.add('hidden');
+            }
+
+            // Suscribirse en tiempo real
+            subscribeToRoom(roomData.id);
+
+            screenAuth.classList.add('hidden');
+            screenRoom.classList.remove('hidden');
+
+            showToast(`Sala #${roomData.id} activa`, "🛸");
+        }
+
+        // Suscripción de Datos
+        function subscribeToRoom(rId) {
+            if (activeRoomUnsubscribe) activeRoomUnsubscribe();
+
+            if (isFirebaseActive) {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', rId);
+                activeRoomUnsubscribe = onSnapshot(docRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        currentRoom = docSnap.data();
+                        renderGallery(currentRoom.images);
+                    } else {
+                        exitRoom();
+                        showToast("La sala ha sido cerrada", "🚪");
+                    }
+                });
+            } else {
+                renderGallery(currentRoom.images || []);
+            }
+        }
+
+        // Salir de la Sala (Volver a Pantalla de Inicio)
+        function exitRoom() {
+            if (activeRoomUnsubscribe) {
+                activeRoomUnsubscribe();
+                activeRoomUnsubscribe = null;
+            }
+
+            window.history.pushState({}, '', window.location.pathname);
+            currentRoom = null;
+            userRole = "client"; // Resetear rol por defecto
+            screenRoom.classList.add('hidden');
+            screenAuth.classList.remove('hidden');
+            inputRoomId.value = '';
+            roleBadge.textContent = "PÁGINA PRINCIPAL";
+            roleBadge.className = "px-2.5 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase bg-slate-800 border border-slate-700 text-slate-300";
+        }
+
+        // Destruir Sala (Piloto)
+        async function destroyRoom() {
+            if (!currentRoom) return;
+            if (confirm("¿Deseas cerrar esta sala de entrega? Todos los archivos se eliminarán permanentemente.")) {
+                const rId = currentRoom.id;
+                if (isFirebaseActive) {
+                    try {
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', rId);
+                        await deleteDoc(docRef);
+                    } catch (e) {
+                        console.error(e);
+                    }
+                } else {
+                    localStorage.removeItem(`aedrop_${rId}`);
+                }
+                exitRoom();
+                showToast("Sala de entrega eliminada", "🗑️");
+            }
+        }
+
+        // --- SUBIDA DE ARCHIVOS ---
+        inputFileSelector.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            if (!files.length) return;
+
+            showToast("Procesando fotos...", "⚙️");
+            const quality = selectQuality.value;
+
+            for (const file of files) {
+                try {
+                    const compressed = await compressImage(file, quality);
+                    await uploadPhoto(compressed);
+                } catch (err) {
+                    console.error("Fallo de compresión:", err);
+                }
+            }
+            inputFileSelector.value = '';
+        });
+
+        async function uploadPhoto(photoObj) {
+            if (!currentRoom) return;
+
+            const updatedImages = [...(currentRoom.images || [])];
+            updatedImages.push({
+                name: photoObj.name,
+                url: photoObj.base64,
+                timestamp: Date.now()
+            });
+
+            if (isFirebaseActive) {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoom.id);
+                    await updateDoc(docRef, { images: updatedImages });
+                } catch (e) {
+                    showToast("Error al subir foto", "⚠️");
+                }
+            } else {
+                currentRoom.images = updatedImages;
+                localStorage.setItem(`aedrop_${currentRoom.id}`, JSON.stringify(currentRoom));
+                renderGallery(updatedImages);
+            }
+        }
+
+        // --- RENDERIZADO DE GALERÍA ---
+        function renderGallery(images) {
+            galleryGrid.innerHTML = '';
+
+            if (!images || images.length === 0) {
+                galleryGrid.appendChild(galleryEmpty);
+                galleryCount.textContent = "0 fotos";
+                btnDownloadAll.classList.add('hidden'); // Ocultar descargar ZIP si está vacío
+                return;
+            }
+
+            galleryCount.textContent = `${images.length} ${images.length === 1 ? 'foto' : 'fotos'}`;
+            btnDownloadAll.classList.remove('hidden'); // Mostrar si hay elementos
+
+            images.forEach((img, index) => {
+                const card = document.createElement('div');
+                card.className = "group relative bg-slate-900 border border-slate-800 rounded-xl overflow-hidden aspect-square flex flex-col justify-between";
+
+                card.innerHTML = `
+                    <img src="${img.url}" class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300" alt="${img.name}" loading="lazy">
+                    <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-2.5 flex items-center justify-between">
+                        <span class="text-[9px] text-slate-300 truncate pr-2 max-w-[110px] font-medium">${img.name}</span>
+                        <a href="${img.url}" download="${img.name || 'foto_dron.jpg'}" class="p-1.5 bg-slate-950/80 hover:bg-slate-800 rounded-lg text-slate-200 transition-all transform active:scale-95">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+                        </a>
+                    </div>
+                `;
+                galleryGrid.appendChild(card);
+            });
+        }
+
+        // --- EMPAQUETADO Y DESCARGA EN ZIP (ON-DEMAND) ---
+        btnDownloadAll.addEventListener('click', async () => {
+            if (!currentRoom || !currentRoom.images || currentRoom.images.length === 0) {
+                showToast("No hay fotos para empaquetar", "🔎");
+                return;
+            }
+
+            showToast("Empaquetando en ZIP...", "📦");
+
+            try {
+                const zip = new JSZip();
+                const images = currentRoom.images;
+
+                images.forEach((img, index) => {
+                    const base64Data = img.url.split(',')[1];
+                    const extension = img.name.split('.').pop() || 'jpg';
+                    const fileName = img.name ? img.name : `foto_${index + 1}.${extension}`;
+                    zip.file(fileName, base64Data, { base64: true });
+                });
+
+                const content = await zip.generateAsync({ type: "blob" });
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = `Aedrop_${currentRoom.id}.zip`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                showToast("¡ZIP descargado con éxito!", "✅");
+            } catch (err) {
+                console.error("Error en JSZip:", err);
+                showToast("Error al empaquetar archivos", "❌");
+            }
+        });
+
+        // --- SISTEMA DE CONTADOR (24 HORAS) ---
+        let countdownTimer = null;
+        function updateCountdown(expireTimestamp) {
+            if (countdownTimer) clearInterval(countdownTimer);
+
+            function runTimer() {
+                const now = Date.now();
+                const diff = expireTimestamp - now;
+
+                if (diff <= 0) {
+                    clearInterval(countdownTimer);
+                    exitRoom();
+                    showToast("La sala de entrega ha expirado", "⌛");
+                    return;
+                }
+
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                countdownDisplay.textContent = `${hours}h ${minutes}m`;
+            }
+
+            runTimer();
+            countdownTimer = setInterval(runTimer, 60000);
+        }
+
+        // --- EVENTOS INTERFAZ ---
+        btnCreateRoom.addEventListener('click', createRoom);
+        btnJoinRoom.addEventListener('click', () => {
+            const inputVal = inputRoomId.value;
+            if (inputVal) {
+                userRole = "client"; // Al unirse por código se inicia como cliente
+                joinRoom(inputVal);
+            } else {
+                showToast("Ingresa un código de sala", "⌨️");
+            }
+        });
+
+        btnLeaveRoom.addEventListener('click', destroyRoom);
+
+        // Copiado de Links al Portapapeles
+        function copyRoomLink() {
+            if (!currentRoom) return;
+            const clientJoinUrl = `${window.location.origin}${window.location.pathname}?room=${currentRoom.id}`;
+            
+            const tempInput = document.createElement("input");
+            tempInput.value = clientJoinUrl;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+
+            showToast("Enlace de cliente copiado", "🔗");
+        }
+
+        btnCopyLink.addEventListener('click', copyRoomLink);
+        btnShareClipboard.addEventListener('click', copyRoomLink);
+
+        // Control Modal QR
+        btnShowQr.addEventListener('click', () => {
+            modalQr.classList.remove('hidden');
+        });
+
+        function closeModal() {
+            modalQr.classList.add('hidden');
+        }
+        btnCloseQr.addEventListener('click', closeModal);
+        modalQr.addEventListener('click', (e) => {
+            if (e.target === modalQr) closeModal();
+        });
+
+    </script>
+</body>
+</html>
